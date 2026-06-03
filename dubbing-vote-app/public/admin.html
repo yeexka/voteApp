@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Control</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="page">
+    <div class="header">
+      <div>
+        <h1 class="title">Admin Control</h1>
+        <p class="subtitle">后台控制中心：大屏只显示，所有操作都在这里完成。</p>
+      </div>
+      <a class="badge" href="/screen" target="_blank">Open Screen</a>
+    </div>
+
+    <section id="loginPanel" class="card admin-panel">
+      <h2>Login / 登录</h2>
+      <div class="form-row"><label>Password</label><input id="passwordInput" type="password" placeholder="Default: 123456" /></div>
+      <button id="loginBtn">Login</button>
+      <p class="small">正式部署前请在 .env 里修改 ADMIN_PASSWORD。别拿 123456 去裸奔，服务器也会替你尴尬。</p>
+    </section>
+
+    <section id="adminPanel" class="hidden">
+      <section class="card admin-panel">
+        <h2>Current Status / 当前状态</h2>
+        <div class="status-line">
+          <div class="status-item">Group<strong id="statusGroup">-</strong></div>
+          <div class="status-item">Phase<strong id="statusPhase">-</strong></div>
+          <div class="status-item">Time Left<strong id="statusTime">--:--</strong></div>
+          <div class="status-item">Votes<strong id="statusVotes">0</strong></div>
+        </div>
+      </section>
+
+      <section class="card admin-panel">
+        <h2>Group Names / 小组名</h2>
+        <div id="groupInputs" class="grid"></div>
+        <div class="actions"><button id="saveGroupsBtn">Save Group Names</button></div>
+      </section>
+
+      <section class="card admin-panel">
+        <h2>Voting Control / 投票控制</h2>
+        <div class="form-row">
+          <label>Group</label>
+          <select id="groupSelect"></select>
+        </div>
+        <div class="actions">
+          <button id="startBtn" class="ok">Start 2-minute Voting</button>
+          <button id="closeBtn" class="secondary">Close Voting Now</button>
+          <button id="idleBtn" class="secondary">Back to Waiting Screen</button>
+          <button id="rankingBtn">Show Final Ranking</button>
+        </div>
+      </section>
+
+      <section class="card admin-panel">
+        <h2>Reset / 重置</h2>
+        <div class="actions">
+          <button id="resetGroupBtn" class="danger">Reset Selected Group Votes</button>
+          <button id="resetAllBtn" class="danger">Reset ALL Votes</button>
+        </div>
+      </section>
+
+      <section class="card admin-panel">
+        <h2>Live Results / 后台结果预览</h2>
+        <table class="results">
+          <thead><tr><th>Rank</th><th>Group</th><th>Average</th><th>Votes</th></tr></thead>
+          <tbody id="adminResults"></tbody>
+        </table>
+      </section>
+    </section>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/common.js"></script>
+  <script>
+    let adminPassword = localStorage.getItem('adminPassword') || '';
+    let groups = [];
+
+    const loginPanel = document.getElementById('loginPanel');
+    const adminPanel = document.getElementById('adminPanel');
+    const groupInputs = document.getElementById('groupInputs');
+    const groupSelect = document.getElementById('groupSelect');
+
+    function adminHeaders() {
+      return { 'x-admin-password': adminPassword };
+    }
+
+    async function loadGroups() {
+      const data = await api('/api/groups');
+      groups = data.groups;
+      groupInputs.innerHTML = groups.map(g => `
+        <div>
+          <label class="small">Group ${g.id}</label>
+          <input data-group-id="${g.id}" value="${g.name || ''}" placeholder="Group ${g.id} name" />
+        </div>
+      `).join('');
+      groupSelect.innerHTML = groups.map(g => `<option value="${g.id}">${g.displayName}</option>`).join('');
+    }
+
+    async function loadResults() {
+      const data = await api('/api/results');
+      renderResults(data.results);
+    }
+
+    function renderResults(results) {
+      document.getElementById('adminResults').innerHTML = results.map(r => `
+        <tr><td>${r.rank}</td><td>${r.name}</td><td>${r.averageScore ?? '-'}</td><td>${r.voteCount}</td></tr>
+      `).join('');
+    }
+
+    async function bootAdmin() {
+      loginPanel.classList.add('hidden');
+      adminPanel.classList.remove('hidden');
+      await loadGroups();
+      await loadResults();
+    }
+
+    document.getElementById('loginBtn').onclick = async () => {
+      const password = document.getElementById('passwordInput').value;
+      try {
+        await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ password }) });
+        adminPassword = password;
+        localStorage.setItem('adminPassword', password);
+        bootAdmin();
+      } catch (err) {
+        alert('Password incorrect.');
+      }
+    };
+
+    if (adminPassword) bootAdmin();
+
+    document.getElementById('saveGroupsBtn').onclick = async () => {
+      const payload = [...document.querySelectorAll('[data-group-id]')].map(input => ({
+        id: Number(input.dataset.groupId),
+        name: input.value
+      }));
+      await api('/api/admin/groups', { method: 'POST', headers: adminHeaders(), body: JSON.stringify({ groups: payload }) });
+      await loadGroups();
+      alert('Saved.');
+    };
+
+    document.getElementById('startBtn').onclick = async () => {
+      await api('/api/admin/start', { method: 'POST', headers: adminHeaders(), body: JSON.stringify({ groupId: Number(groupSelect.value) }) });
+    };
+
+    document.getElementById('closeBtn').onclick = async () => {
+      await api('/api/admin/close', { method: 'POST', headers: adminHeaders(), body: '{}' });
+    };
+
+    document.getElementById('idleBtn').onclick = async () => {
+      await api('/api/admin/idle', { method: 'POST', headers: adminHeaders(), body: '{}' });
+    };
+
+    document.getElementById('rankingBtn').onclick = async () => {
+      await api('/api/admin/ranking', { method: 'POST', headers: adminHeaders(), body: '{}' });
+    };
+
+    document.getElementById('resetGroupBtn').onclick = async () => {
+      if (!confirm('Reset selected group votes?')) return;
+      await api('/api/admin/reset-group', { method: 'POST', headers: adminHeaders(), body: JSON.stringify({ groupId: Number(groupSelect.value) }) });
+      await loadResults();
+    };
+
+    document.getElementById('resetAllBtn').onclick = async () => {
+      if (!confirm('Reset ALL votes? This cannot be undone.')) return;
+      await api('/api/admin/reset-all', { method: 'POST', headers: adminHeaders(), body: '{}' });
+      await loadResults();
+    };
+
+    socket.on('state:update', payload => {
+      const s = payload.state;
+      if (!s) return;
+      document.getElementById('statusGroup').textContent = s.currentGroupName || '-';
+      document.getElementById('statusPhase').textContent = phaseLabel(s.phase);
+      document.getElementById('statusTime').textContent = s.totalRemainingSeconds ? fmt(s.totalRemainingSeconds) : '--:--';
+      document.getElementById('statusVotes').textContent = s.voteCount ?? 0;
+      if (payload.results) renderResults(payload.results);
+    });
+  </script>
+</body>
+</html>
