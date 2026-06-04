@@ -486,8 +486,10 @@ async function renderScreen() {
         wrap.className = "participants-screen participants-wall-screen";
         wrap.innerHTML = `
           <section class="participants-wall">
-          <img src="assets/logo.png">
-            <h1 class="participants-title">   卓越之声·荣耀参与者</h1>
+          <div class="participants-header">
+  <img src="assets/logo.png" class="participants-logo" alt="UMS logo">
+  <h1 class="participants-title">卓越之声·荣耀参与者</h1>
+</div>
             <div class="participants-name-wall">
               ${PARTICIPANTS.map((name, index) => `<span style="--i:${index}">${esc(name)}</span>`).join("")}
             </div>

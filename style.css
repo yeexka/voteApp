@@ -2667,3 +2667,25 @@ body.screen-page {
 .participants-wall {
   transform: translateY(-35px) !important;
 }
+/* 参赛名单页：logo 和标题同一行 */
+.participants-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 34px;
+  margin-bottom: 34px;
+}
+
+/* 校徽缩小 */
+.participants-logo {
+  width: 120px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+/* 标题不要再自己占满一整行 */
+.participants-header .participants-title {
+  margin: 0 !important;
+  font-size: clamp(58px, 5.8vw, 104px) !important;
+  line-height: 1.05 !important;
+}
