@@ -2563,9 +2563,9 @@ body.screen-page {
   min-width: 96px;
   min-height: 40px;
   padding: 7px 14px;
-  border-radius: 999px;
-  color: rgba(213, 199, 9, 0.96);
-  font-size: clamp(17px, 1.25vw, 23px);
+  /* border-radius: 999px; */
+  color: rgba(213, 154, 4, 0.96);
+  font-size: clamp(24px, 1.25vw, 23px);
   font-weight: 850;
   letter-spacing: 0.03em;
   /* background: rgba(255,255,255,.075); */
