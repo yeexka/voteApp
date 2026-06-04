@@ -486,7 +486,7 @@ async function renderScreen() {
         wrap.className = "participants-screen participants-wall-screen";
         wrap.innerHTML = `
           <section class="participants-wall">
-            <h1 class="participants-title">卓越之声·荣耀参与者</h1>
+            <h1 class="participants-title">   卓越之声·荣耀参与者</h1>
             <div class="participants-name-wall">
               ${PARTICIPANTS.map((name, index) => `<span style="--i:${index}">${esc(name)}</span>`).join("")}
             </div>
