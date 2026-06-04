@@ -3391,3 +3391,25 @@ body.screen-page {
 .emergency-score-panel {
   border-color: rgba(255, 232, 142, 0.42);
 }
+/* 手机端 Logo：浮动显示，不占页面高度 */
+.mobile-logo-wrap {
+  position: fixed !important;
+  top: 10px !important;
+  left: 10px !important;
+  z-index: 50 !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.mobile-school-logo {
+  width: 42px !important;
+  height: auto !important;
+  max-width: 42px !important;
+  display: block !important;
+  object-fit: contain !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.25));
+}
