@@ -5,97 +5,59 @@ let selectedScore = null;
 
 const COMPETITION_GROUPS = [
   {
-    "id": 1,
-    "name": "低调组",
-    "work": "小猪佩奇",
-    "members": [
-      "李峻宇",
-      "法舜哲",
-      "刘瑜董泽",
-      "邱傲然"
-    ]
+    id: 1,
+    name: "低调组",
+    work: "小猪佩奇",
+    members: ["李峻宇", "法舜哲", "刘瑜董泽", "邱傲然"],
   },
   {
-    "id": 2,
-    "name": "企鹅组",
-    "work": "马达加斯加的企鹅1",
-    "members": [
-      "朱海滨",
-      "王鸿飞",
-      "殷子尧",
-      "吴硕宸"
-    ]
+    id: 2,
+    name: "企鹅组",
+    work: "马达加斯加的企鹅1",
+    members: ["朱海滨", "王鸿飞", "殷子尧", "吴硕宸"],
   },
   {
-    "id": 3,
-    "name": "宠物王",
-    "work": "爱宠大机密",
-    "members": [
-      "王若璇",
-      "王薇茗",
-      "贾璀琦"
-    ]
+    id: 3,
+    name: "宠物王",
+    work: "爱宠大机密",
+    members: ["王若璇", "王薇茗", "贾璀琦"],
   },
   {
-    "id": 4,
-    "name": "探案组",
-    "work": "疯狂动物城",
-    "members": [
-      "温子豪",
-      "袁睿",
-      "王雪瑜"
-    ]
+    id: 4,
+    name: "探案组",
+    work: "疯狂动物城",
+    members: ["温子豪", "袁睿", "王雪瑜"],
   },
   {
-    "id": 5,
-    "name": "天煞队",
-    "work": "功夫熊猫3",
-    "members": [
-      "张峻瑜",
-      "郗梓淳",
-      "蒋家增"
-    ]
+    id: 5,
+    name: "天煞队",
+    work: "功夫熊猫3",
+    members: ["张峻瑜", "郗梓淳", "蒋家增"],
   },
   {
-    "id": 6,
-    "name": "随便队",
-    "work": "神偷奶爸",
-    "members": [
-      "王梓安",
-      "张迎栋",
-      "周雨馨",
-      "刘小童"
-    ]
+    id: 6,
+    name: "随便队",
+    work: "神偷奶爸",
+    members: ["王梓安", "张迎栋", "周雨馨", "刘小童"],
   },
   {
-    "id": 7,
-    "name": "Team Spirit",
-    "work": "狮子王",
-    "members": [
-      "金旻志",
-      "王铭洋",
-      "颜鑫宇",
-      "张晶贻"
-    ]
+    id: 7,
+    name: "Team Spirit",
+    work: "狮子王",
+    members: ["金旻志", "王铭洋", "颜鑫宇", "张晶贻"],
   },
   {
-    "id": 8,
-    "name": "蔚蓝队",
-    "work": "阿甘正传",
-    "members": [
-      "王文煊",
-      "Sami"
-    ]
+    id: 8,
+    name: "蔚蓝队",
+    work: "阿甘正传",
+    members: ["王文煊"],
   },
   {
-    "id": 9,
-    "name": "无人队",
-    "work": "奇幻森林",
-    "members": [
-      "闫梓翔",
-      "娄家辉"
-    ]
-  }
+    id: 9,
+    name: "无人队",
+    work: "奇幻森林",
+    members: ["闫梓翔", "娄家辉"],
+  },
 ];
 const PARTICIPANTS = [
   "邱傲然",
@@ -164,45 +126,77 @@ const PARTICIPANTS = [
   "吴钒",
   "宋延昊",
   "宋述辉",
-  "任师域"
+  "任师域",
 ];
 
 function getClient() {
   if (!supabaseClient) {
-    if (!cfg.SUPABASE_URL || cfg.SUPABASE_URL.includes('YOUR_PROJECT') || !cfg.SUPABASE_ANON_KEY || cfg.SUPABASE_ANON_KEY.includes('YOUR_')) {
-      throw new Error('Please fill SUPABASE_URL and SUPABASE_ANON_KEY in config.js first.');
+    if (
+      !cfg.SUPABASE_URL ||
+      cfg.SUPABASE_URL.includes("YOUR_PROJECT") ||
+      !cfg.SUPABASE_ANON_KEY ||
+      cfg.SUPABASE_ANON_KEY.includes("YOUR_")
+    ) {
+      throw new Error(
+        "Please fill SUPABASE_URL and SUPABASE_ANON_KEY in config.js first.",
+      );
     }
-    supabaseClient = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    supabaseClient = window.supabase.createClient(
+      cfg.SUPABASE_URL,
+      cfg.SUPABASE_ANON_KEY,
+    );
   }
   return supabaseClient;
 }
 
-function $(id) { return document.getElementById(id); }
-function nowMs() { return Date.now(); }
-function isoAfter(seconds) { return new Date(Date.now() + seconds * 1000).toISOString(); }
-function esc(v) { return String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-function safeName(g) { return g && g.name ? g.name : `Group ${g ? g.id : ''}`; }
-function safeWork(g) { return g && g.work ? g.work : (g && g.work_title ? g.work_title : '作品待定'); }
+function $(id) {
+  return document.getElementById(id);
+}
+function nowMs() {
+  return Date.now();
+}
+function isoAfter(seconds) {
+  return new Date(Date.now() + seconds * 1000).toISOString();
+}
+function esc(v) {
+  return String(v ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+function safeName(g) {
+  return g && g.name ? g.name : `Group ${g ? g.id : ""}`;
+}
+function safeWork(g) {
+  return g && g.work ? g.work : g && g.work_title ? g.work_title : "作品待定";
+}
 function safeMembers(g) {
-  if (!g) return '参赛人待定';
-  if (Array.isArray(g.members)) return g.members.join('、');
-  return g.members || '参赛人待定';
+  if (!g) return "参赛人待定";
+  if (Array.isArray(g.members)) return g.members.join("、");
+  return g.members || "参赛人待定";
 }
 function fmt(ms) {
   const s = Math.max(0, Math.ceil(ms / 1000));
   const m = Math.floor(s / 60);
   const r = s % 60;
-  return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
 }
 function getVoteUrl() {
-  const base = cfg.PUBLIC_BASE_URL && cfg.PUBLIC_BASE_URL.trim()
-    ? cfg.PUBLIC_BASE_URL.trim().replace(/\/$/, '')
-    : window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+  const base =
+    cfg.PUBLIC_BASE_URL && cfg.PUBLIC_BASE_URL.trim()
+      ? cfg.PUBLIC_BASE_URL.trim().replace(/\/$/, "")
+      : window.location.origin +
+        window.location.pathname.replace(/\/[^/]*$/, "");
   return `${base}/vote.html`;
 }
-function getGroupById(id) { return COMPETITION_GROUPS.find(g => g.id === Number(id)); }
-function groupCover(g) { return g ? `assets/group${g.id}.jpg` : ''; }
-function coverImg(g, className = 'cover-image') {
+function getGroupById(id) {
+  return COMPETITION_GROUPS.find((g) => g.id === Number(id));
+}
+function groupCover(g) {
+  return g ? `assets/group${g.id}.jpg` : "";
+}
+function coverImg(g, className = "cover-image") {
   return `<div class="${className}"><img src="${groupCover(g)}" alt="${esc(safeName(g))} cover" onerror="this.closest('.${className}').style.display='none'"></div>`;
 }
 
@@ -218,69 +212,107 @@ function setRingProgress(el, remainingMs, totalMs, circumference) {
 function getPhaseTotalMs(state, phase) {
   const canvassing = Number(cfg.CANVASSING_SECONDS || 60) * 1000;
   const thinking = Number(cfg.THINKING_SECONDS || 60) * 1000;
-  if (phase === 'canvassing') return canvassing;
-  if (phase === 'thinking') return thinking;
+  if (phase === "canvassing") return canvassing;
+  if (phase === "thinking") return thinking;
   if (state && state.voting_start_time && state.voting_end_time) {
-    return new Date(state.voting_end_time).getTime() - new Date(state.voting_start_time).getTime();
+    return (
+      new Date(state.voting_end_time).getTime() -
+      new Date(state.voting_start_time).getTime()
+    );
   }
   return canvassing + thinking;
 }
 function derivePhase(state) {
-  if (!state) return { phase: 'idle', remainingMs: 0 };
-  if (state.show_ranking || state.phase === 'ranking') return { phase: 'ranking', remainingMs: 0 };
-  if (state.phase === 'menu' || state.phase === 'participants' || state.phase === 'performing') return { phase: state.phase, remainingMs: 0 };
-  if (!state.voting_open || !state.voting_end_time) return { phase: state.phase || 'idle', remainingMs: 0 };
+  if (!state) return { phase: "idle", remainingMs: 0 };
+  if (state.show_ranking || state.phase === "ranking")
+    return { phase: "ranking", remainingMs: 0 };
+  if (
+    state.phase === "menu" ||
+    state.phase === "participants" ||
+    state.phase === "performing"
+  )
+    return { phase: state.phase, remainingMs: 0 };
+  if (!state.voting_open || !state.voting_end_time)
+    return { phase: state.phase || "idle", remainingMs: 0 };
   const t = nowMs();
   const canvassEnd = new Date(state.canvassing_end_time).getTime();
   const voteEnd = new Date(state.voting_end_time).getTime();
-  if (t >= voteEnd) return { phase: 'closed', remainingMs: 0 };
-  if (t < canvassEnd) return { phase: 'canvassing', remainingMs: voteEnd - t, phaseRemainingMs: canvassEnd - t };
-  return { phase: 'thinking', remainingMs: voteEnd - t, phaseRemainingMs: voteEnd - t };
+  if (t >= voteEnd) return { phase: "closed", remainingMs: 0 };
+  if (t < canvassEnd)
+    return {
+      phase: "canvassing",
+      remainingMs: voteEnd - t,
+      phaseRemainingMs: canvassEnd - t,
+    };
+  return {
+    phase: "thinking",
+    remainingMs: voteEnd - t,
+    phaseRemainingMs: voteEnd - t,
+  };
 }
 
 async function fetchState() {
-  const { data, error } = await getClient().from('event_state').select('*').eq('id', 1).single();
+  const { data, error } = await getClient()
+    .from("event_state")
+    .select("*")
+    .eq("id", 1)
+    .single();
   if (error) throw error;
   return data;
 }
 async function updateState(patch) {
-  const { error } = await getClient().from('event_state').update({ ...patch, updated_at: new Date().toISOString() }).eq('id', 1);
+  const { error } = await getClient()
+    .from("event_state")
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq("id", 1);
   if (error) throw error;
 }
 async function fetchVotes() {
-  const { data, error } = await getClient().from('votes').select('*');
+  const { data, error } = await getClient().from("votes").select("*");
   if (error) throw error;
   return data || [];
 }
 async function hasVoted(groupId) {
   const token = ensureToken();
-  const { data, error } = await getClient().from('votes').select('score').eq('group_id', groupId).eq('voter_token', token).maybeSingle();
+  const { data, error } = await getClient()
+    .from("votes")
+    .select("score")
+    .eq("group_id", groupId)
+    .eq("voter_token", token)
+    .maybeSingle();
   if (error) throw error;
   return data;
 }
 async function fetchResults() {
   const votes = await fetchVotes();
-  return COMPETITION_GROUPS.map(g => {
-    const gv = votes.filter(v => Number(v.group_id) === Number(g.id));
+  return COMPETITION_GROUPS.map((g) => {
+    const gv = votes.filter((v) => Number(v.group_id) === Number(g.id));
     const total = gv.reduce((sum, v) => sum + Number(v.score || 0), 0);
     const avg = gv.length ? total / gv.length : 0;
     return { ...g, vote_count: gv.length, average_score: avg };
-  }).sort((a, b) => b.average_score - a.average_score || b.vote_count - a.vote_count || a.id - b.id);
+  }).sort(
+    (a, b) =>
+      b.average_score - a.average_score ||
+      b.vote_count - a.vote_count ||
+      a.id - b.id,
+  );
 }
 function ensureToken() {
-  let token = localStorage.getItem('dubbing_voter_token');
+  let token = localStorage.getItem("dubbing_voter_token");
   if (!token) {
-    token = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    localStorage.setItem('dubbing_voter_token', token);
+    token = crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem("dubbing_voter_token", token);
   }
   return token;
 }
-function setMsg(id, text, type='notice') {
+function setMsg(id, text, type = "notice") {
   const el = $(id);
   if (!el) return;
   el.className = `notice ${type}`;
   el.textContent = text;
-  el.style.display = text ? 'block' : 'none';
+  el.style.display = text ? "block" : "none";
 }
 
 function hiddenNav() {
@@ -298,8 +330,8 @@ function hiddenNav() {
 }
 function toggleHiddenNav(event) {
   event.stopPropagation();
-  const nav = event.currentTarget.closest('.hidden-nav');
-  if (nav) nav.classList.toggle('open');
+  const nav = event.currentTarget.closest(".hidden-nav");
+  if (nav) nav.classList.toggle("open");
 }
 function toggleFullscreen() {
   const doc = document;
@@ -308,52 +340,89 @@ function toggleFullscreen() {
   else if (doc.exitFullscreen) doc.exitFullscreen();
 }
 async function goHome() {
-  await updateState({ current_group_id: null, phase: 'idle', voting_open: false, show_ranking: false, voting_start_time: null, canvassing_end_time: null, voting_end_time: null });
+  await updateState({
+    current_group_id: null,
+    phase: "idle",
+    voting_open: false,
+    show_ranking: false,
+    voting_start_time: null,
+    canvassing_end_time: null,
+    voting_end_time: null,
+  });
   await renderScreen();
 }
 async function showCompetitionMenu() {
-  await updateState({ current_group_id: null, phase: 'menu', voting_open: false, show_ranking: false, voting_start_time: null, canvassing_end_time: null, voting_end_time: null });
+  await updateState({
+    current_group_id: null,
+    phase: "menu",
+    voting_open: false,
+    show_ranking: false,
+    voting_start_time: null,
+    canvassing_end_time: null,
+    voting_end_time: null,
+  });
   await renderScreen();
 }
 async function showParticipants() {
-  await updateState({ phase: 'participants', voting_open: false, show_ranking: false });
+  await updateState({
+    phase: "participants",
+    voting_open: false,
+    show_ranking: false,
+  });
   await renderScreen();
 }
 async function showResults() {
-  await updateState({ phase: 'ranking', voting_open: false, show_ranking: true });
+  await updateState({
+    phase: "ranking",
+    voting_open: false,
+    show_ranking: true,
+  });
   await renderScreen();
 }
 async function selectCompetitionGroup(id) {
-  await updateState({ current_group_id: id, phase: 'performing', voting_open: false, show_ranking: false, voting_start_time: null, canvassing_end_time: null, voting_end_time: null });
+  await updateState({
+    current_group_id: id,
+    phase: "performing",
+    voting_open: false,
+    show_ranking: false,
+    voting_start_time: null,
+    canvassing_end_time: null,
+    voting_end_time: null,
+  });
   await renderScreen();
 }
 async function startVotingForCurrent() {
   const state = await fetchState();
   const groupId = Number(state.current_group_id);
-  if (!groupId) throw new Error('No group selected.');
+  if (!groupId) throw new Error("No group selected.");
   const canvassing = Number(cfg.CANVASSING_SECONDS || 60);
   const thinking = Number(cfg.THINKING_SECONDS || 60);
   await updateState({
     current_group_id: groupId,
-    phase: 'canvassing',
+    phase: "canvassing",
     voting_open: true,
     voting_start_time: new Date().toISOString(),
     canvassing_end_time: isoAfter(canvassing),
     voting_end_time: isoAfter(canvassing + thinking),
-    show_ranking: false
+    show_ranking: false,
   });
   await renderScreen();
 }
 async function closeVoting() {
-  await updateState({ phase: 'closed', voting_open: false, voting_end_time: new Date().toISOString(), show_ranking: false });
+  await updateState({
+    phase: "closed",
+    voting_open: false,
+    voting_end_time: new Date().toISOString(),
+    show_ranking: false,
+  });
   await renderScreen();
 }
 function buildQRCode(width = 230) {
-  const box = $('qrcode');
+  const box = $("qrcode");
   if (!box) return;
-  box.innerHTML = '';
+  box.innerHTML = "";
   new QRCode(box, { text: getVoteUrl(), width, height: width });
-  const url = $('voteUrlText');
+  const url = $("voteUrlText");
   if (url) url.textContent = getVoteUrl();
 }
 
@@ -367,25 +436,24 @@ async function renderScreen() {
     const state = await fetchState();
     const d = derivePhase(state);
     const group = getGroupById(state.current_group_id);
-    const wrap = $('screenMain');
-    if (d.phase === 'ranking') {
-      if (screenLayoutKey !== 'ranking' || !wrap.dataset.ready) return renderResultsBarChart();
+    const wrap = $("screenMain");
+    if (d.phase === "ranking") {
+      if (screenLayoutKey !== "ranking" || !wrap.dataset.ready)
+        return renderResultsBarChart();
       return;
     }
-    const layoutKey = `${d.phase}-${state.current_group_id || 'none'}`;
+    const layoutKey = `${d.phase}-${state.current_group_id || "none"}`;
     const shouldRebuild = screenLayoutKey !== layoutKey || !wrap.dataset.ready;
 
     if (shouldRebuild) {
       screenLayoutKey = layoutKey;
-      wrap.dataset.ready = '1';
-      wrap.innerHTML = '';
+      wrap.dataset.ready = "1";
+      wrap.innerHTML = "";
 
-      if (d.phase === 'idle') {
-        wrap.className = 'home-code-screen';
+      if (d.phase === "idle") {
+        wrap.className = "home-code-screen";
         wrap.innerHTML = `
           <section class="home-code-card">
-            <div class="home-logo-text">UMS</div>
-            <div class="home-kicker">2025-2026 · FIRST DUBBING COMPETITION</div>
             <h1 class="home-main-title">
               马来西亚沙巴大学2+2国际本科首届<br>
               <span>“声临其境”杯配音大赛</span>
@@ -397,29 +465,29 @@ async function renderScreen() {
         return;
       }
 
-      if (d.phase === 'menu') {
-        wrap.className = 'menu-screen';
+      if (d.phase === "menu") {
+        wrap.className = "menu-screen";
         wrap.innerHTML = `
           <section class="menu-card">
             <div class="screen-kicker">COMPETITION ENTRY</div>
             <h1 class="menu-title">比赛入口</h1>
             <p class="menu-subtitle">请选择即将演绎的小组</p>
             <div class="group-button-grid">
-              ${COMPETITION_GROUPS.map(g => `<button class="group-entry-btn" onclick="selectCompetitionGroup(${g.id})"><b>${esc(g.name)}</b><span>《${esc(g.work)}》</span></button>`).join('')}
+              ${COMPETITION_GROUPS.map((g) => `<button class="group-entry-btn" onclick="selectCompetitionGroup(${g.id})"><b>${esc(g.name)}</b><span>《${esc(g.work)}》</span></button>`).join("")}
             </div>
           </section>
           ${hiddenNav()}`;
         return;
       }
 
-      if (d.phase === 'participants') {
-        wrap.className = 'participants-screen';
+      if (d.phase === "participants") {
+        wrap.className = "participants-screen";
         wrap.innerHTML = `
           <section class="participants-card">
             <div class="screen-kicker">HONOR PARTICIPANTS</div>
             <h1 class="participants-title">卓越之声·荣耀参与者</h1>
             <div class="participants-grid">
-              ${PARTICIPANTS.map(name => `<span>${esc(name)}</span>`).join('')}
+              ${PARTICIPANTS.map((name) => `<span>${esc(name)}</span>`).join("")}
             </div>
             <p class="participants-footer">用声音传递力量，用热爱感染舞台，感谢每位参赛者的精彩呈现！</p>
           </section>
@@ -427,14 +495,14 @@ async function renderScreen() {
         return;
       }
 
-      if (d.phase === 'performing' && group) {
-        wrap.className = 'performing-screen';
+      if (d.phase === "performing" && group) {
+        wrap.className = "performing-screen";
         wrap.innerHTML = `
           <section class="performing-card">
             <div class="screen-kicker">NOW PERFORMING / 正在演绎</div>
             <h1 class="perform-title">${esc(group.name)}</h1>
             <div class="perform-work">《${esc(group.work)}》</div>
-            ${coverImg(group, 'perform-cover')}
+            ${coverImg(group, "perform-cover")}
             <div class="perform-members">${esc(safeMembers(group))}</div>
             <div class="performing-label">演绎中</div>
             <div class="stage-controls">
@@ -446,8 +514,8 @@ async function renderScreen() {
         return;
       }
 
-      if (d.phase === 'closed' && group) {
-        wrap.className = 'closed-screen-page';
+      if (d.phase === "closed" && group) {
+        wrap.className = "closed-screen-page";
         wrap.innerHTML = `
           <section class="closed-card">
             <div class="screen-kicker">VOTING CLOSED</div>
@@ -463,8 +531,8 @@ async function renderScreen() {
         return;
       }
 
-      if ((d.phase === 'canvassing' || d.phase === 'thinking') && group) {
-        wrap.className = 'voting-screen';
+      if ((d.phase === "canvassing" || d.phase === "thinking") && group) {
+        wrap.className = "voting-screen";
         wrap.innerHTML = `
           <section class="voting-info">
             <div class="voting-kicker" id="stageKicker"></div>
@@ -493,38 +561,39 @@ async function renderScreen() {
       }
     }
 
-    if ((d.phase === 'canvassing' || d.phase === 'thinking') && group) {
-      $('stageKicker').textContent = d.phase === 'canvassing' ? '拉票环节' : '最后投票';
-      $('screenGroup').textContent = group.name;
-      $('screenWork').textContent = `《${group.work}》`;
-      const coverSlot = $('votingCoverSlot');
+    if ((d.phase === "canvassing" || d.phase === "thinking") && group) {
+      $("stageKicker").textContent =
+        d.phase === "canvassing" ? "拉票环节" : "最后投票";
+      $("screenGroup").textContent = group.name;
+      $("screenWork").textContent = `《${group.work}》`;
+      const coverSlot = $("votingCoverSlot");
       if (coverSlot && !coverSlot.dataset.coverReady) {
-        coverSlot.innerHTML = coverImg(group, 'voting-cover');
-        coverSlot.dataset.coverReady = '1';
+        coverSlot.innerHTML = coverImg(group, "voting-cover");
+        coverSlot.dataset.coverReady = "1";
       }
-      $('screenMembers').textContent = safeMembers(group);
+      $("screenMembers").textContent = safeMembers(group);
 
-      const ring = $('ringProgress');
-      const ringWrap = $('ringWrap');
-      const label = $('ringLabel');
+      const ring = $("ringProgress");
+      const ringWrap = $("ringWrap");
+      const label = $("ringLabel");
       const totalMs = getPhaseTotalMs(state, d.phase);
       const phaseLeft = d.phaseRemainingMs || 0;
-      ringWrap.classList.remove('is-active', 'is-ending');
+      ringWrap.classList.remove("is-active", "is-ending");
       setRingProgress(ring, phaseLeft, totalMs, 590.619);
 
-      if (d.phase === 'canvassing') {
-        $('screenPhase').textContent = '拉票环节倒计时';
-        $('screenTimer').textContent = fmt(phaseLeft);
-        $('screenHint').textContent = '观众可扫码进入投票，本阶段为拉票时间。';
-        label.textContent = 'CANVASSING';
+      if (d.phase === "canvassing") {
+        $("screenPhase").textContent = "拉票环节倒计时";
+        $("screenTimer").textContent = fmt(phaseLeft);
+        $("screenHint").textContent = "观众可扫码进入投票，本阶段为拉票时间。";
+        label.textContent = "CANVASSING";
       } else {
-        $('screenPhase').textContent = '现场观众投票倒计时';
-        $('screenTimer').textContent = fmt(phaseLeft);
-        $('screenHint').textContent = '最后投票中，请现场观众确认分数。';
-        label.textContent = 'FINAL VOTE';
+        $("screenPhase").textContent = "现场观众投票倒计时";
+        $("screenTimer").textContent = fmt(phaseLeft);
+        $("screenHint").textContent = "最后投票中，请现场观众确认分数。";
+        label.textContent = "FINAL VOTE";
       }
-      ringWrap.classList.add('is-active');
-      if (phaseLeft <= 10000) ringWrap.classList.add('is-ending');
+      ringWrap.classList.add("is-active");
+      if (phaseLeft <= 10000) ringWrap.classList.add("is-ending");
     }
   } catch (e) {
     document.body.innerHTML = `<main class="bigscreen-shell"><section class="connection-error"><h1>大屏连接异常</h1><p>${esc(e.message)}</p><p>请检查网络或刷新同步。</p><button onclick="location.reload()">刷新同步</button></section></main>`;
@@ -533,10 +602,10 @@ async function renderScreen() {
 
 async function renderResultsBarChart() {
   const results = await fetchResults();
-  const wrap = $('screenMain');
-  screenLayoutKey = 'ranking';
-  wrap.dataset.ready = '1';
-  wrap.className = 'results-screen';
+  const wrap = $("screenMain");
+  screenLayoutKey = "ranking";
+  wrap.dataset.ready = "1";
+  wrap.className = "results-screen";
   const maxScore = 10;
   const top3 = results.slice(0, 3);
   const rest = results.slice(3);
@@ -547,26 +616,32 @@ async function renderResultsBarChart() {
       <h1 class="results-title">比赛结果</h1>
 
       <div class="podium-wrap">
-        ${top3.map((r, i) => {
-          const medal = i === 0 ? '冠军' : i === 1 ? '亚军' : '季军';
-          const icon = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
-          const score = r.vote_count ? r.average_score.toFixed(2) : '-';
-          return `<div class="podium-card podium-${i + 1}">
+        ${top3
+          .map((r, i) => {
+            const medal = i === 0 ? "冠军" : i === 1 ? "亚军" : "季军";
+            const icon = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+            const score = r.vote_count ? r.average_score.toFixed(2) : "-";
+            return `<div class="podium-card podium-${i + 1}">
             <div class="podium-icon">${icon}</div>
             <div class="podium-medal">${medal}</div>
             <div class="podium-name">${esc(r.name)}</div>
             <div class="podium-work">《${esc(r.work)}》</div>
             <div class="podium-score">${score}</div>
           </div>`;
-        }).join('')}
+          })
+          .join("")}
       </div>
 
       <div class="bar-list refined-bar-list">
-        ${rest.map((r, i) => {
-          const realRank = i + 4;
-          const width = Math.max(0, Math.min(100, (r.average_score / maxScore) * 100));
-          const score = r.vote_count ? r.average_score.toFixed(2) : '-';
-          return `<div class="bar-row refined-bar-row">
+        ${rest
+          .map((r, i) => {
+            const realRank = i + 4;
+            const width = Math.max(
+              0,
+              Math.min(100, (r.average_score / maxScore) * 100),
+            );
+            const score = r.vote_count ? r.average_score.toFixed(2) : "-";
+            return `<div class="bar-row refined-bar-row">
             <div class="bar-rank">${realRank}</div>
             <div class="bar-main">
               <div class="bar-label"><b>${esc(r.name)}</b><span>《${esc(r.work)}》</span></div>
@@ -574,41 +649,51 @@ async function renderResultsBarChart() {
             </div>
             <div class="bar-score">${score}</div>
           </div>`;
-        }).join('')}
+          })
+          .join("")}
       </div>
     </section>
     ${hiddenNav()}`;
 }
 // Legacy admin page compatibility.
-function requireAdmin() { return true; }
+function requireAdmin() {
+  return true;
+}
 async function initAdmin() {
   document.body.innerHTML = `<div class="page"><div class="card"><h1>后台已简化</h1><p class="subtle">现在请从大屏首页右下角隐藏导航进入“比赛入口”。小组信息已写入系统，不需要在后台添加。</p><a href="index.html"><button>打开大屏首页</button></a></div></div>`;
 }
 async function renderAdmin() {}
 async function renderAdminStatusOnly() {}
 async function saveGroup() {}
-async function startVoting() { await startVotingForCurrent(); }
+async function startVoting() {
+  await startVotingForCurrent();
+}
 async function showPerformance() {}
 async function resetCurrentGroup() {
   const state = await fetchState();
   if (!state.current_group_id) return;
-  await getClient().from('votes').delete().eq('group_id', state.current_group_id);
+  await getClient()
+    .from("votes")
+    .delete()
+    .eq("group_id", state.current_group_id);
 }
 async function resetAll() {
-  await getClient().from('votes').delete().neq('id', 0);
+  await getClient().from("votes").delete().neq("id", 0);
   await goHome();
 }
 
 async function initVote() {
   ensureToken();
-  document.querySelectorAll('.score-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+  document.querySelectorAll(".score-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
       selectedScore = Number(btn.dataset.score);
-      document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
+      document
+        .querySelectorAll(".score-btn")
+        .forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
     });
   });
-  $('submitVote').addEventListener('click', submitVote);
+  $("submitVote").addEventListener("click", submitVote);
   await renderVote();
   setInterval(renderVote, 2000);
 }
@@ -617,67 +702,92 @@ async function renderVote() {
     const state = await fetchState();
     const d = derivePhase(state);
     const group = getGroupById(state.current_group_id);
-    $('voteGroup').textContent = group ? group.name : 'Waiting';
-    const mobileCoverSlot = $('mobileCoverSlot');
+    $("voteGroup").textContent = group ? group.name : "Waiting";
+    const mobileCoverSlot = $("mobileCoverSlot");
     if (mobileCoverSlot) {
       if (group) {
         const expected = String(group.id);
         if (mobileCoverSlot.dataset.groupId !== expected) {
-          mobileCoverSlot.innerHTML = coverImg(group, 'mobile-cover');
+          mobileCoverSlot.innerHTML = coverImg(group, "mobile-cover");
           mobileCoverSlot.dataset.groupId = expected;
         }
       } else {
-        mobileCoverSlot.innerHTML = '';
-        mobileCoverSlot.dataset.groupId = '';
+        mobileCoverSlot.innerHTML = "";
+        mobileCoverSlot.dataset.groupId = "";
       }
     }
-    $('voteTimer').textContent = d.phase === 'canvassing' || d.phase === 'thinking' ? fmt(d.remainingMs) : '--:--';
-    $('votePhase').textContent = d.phase;
+    $("voteTimer").textContent =
+      d.phase === "canvassing" || d.phase === "thinking"
+        ? fmt(d.remainingMs)
+        : "--:--";
+    $("votePhase").textContent = d.phase;
 
-    const miniRing = $('voteRingProgress');
+    const miniRing = $("voteRingProgress");
     const totalMs = getPhaseTotalMs(state, d.phase);
     setRingProgress(miniRing, d.phaseRemainingMs || 0, totalMs, 364.425);
-    if (miniRing && (d.phase !== 'canvassing' && d.phase !== 'thinking')) setRingProgress(miniRing, 0, 1, 364.425);
+    if (miniRing && d.phase !== "canvassing" && d.phase !== "thinking")
+      setRingProgress(miniRing, 0, 1, 364.425);
 
-    const canVote = (d.phase === 'canvassing' || d.phase === 'thinking') && state.voting_open && group;
+    const canVote =
+      (d.phase === "canvassing" || d.phase === "thinking") &&
+      state.voting_open &&
+      group;
     if (!canVote) {
-      $('voteControls').style.display = 'none';
-      let msg = '请等待投票开始 / Waiting for voting to start.';
-      if (d.phase === 'performing') msg = `${group ? group.name : '当前小组'}正在演绎中，请稍后投票。`;
-      if (d.phase === 'closed') msg = `${group ? group.name : '该组'}投票已结束。`;
-      if (d.phase === 'ranking') msg = '比赛结果公布中。';
-      setMsg('voteMsg', msg, 'notice');
+      $("voteControls").style.display = "none";
+      let msg = "请等待投票开始 / Waiting for voting to start.";
+      if (d.phase === "performing")
+        msg = `${group ? group.name : "当前小组"}正在演绎中，请稍后投票。`;
+      if (d.phase === "closed")
+        msg = `${group ? group.name : "该组"}投票已结束。`;
+      if (d.phase === "ranking") msg = "比赛结果公布中。";
+      setMsg("voteMsg", msg, "notice");
       return;
     }
     const voted = await hasVoted(group.id);
     if (voted) {
-      $('voteControls').style.display = 'none';
-      setMsg('voteMsg', `你已完成本组投票。Your score: ${voted.score}`, 'success');
+      $("voteControls").style.display = "none";
+      setMsg(
+        "voteMsg",
+        `你已完成本组投票。Your score: ${voted.score}`,
+        "success",
+      );
     } else {
-      $('voteControls').style.display = 'block';
-      const prompt = d.phase === 'canvassing' ? '拉票环节已开始，投票通道开放。' : '最后投票中，请确认你的分数。';
-      setMsg('voteMsg', prompt, 'notice');
+      $("voteControls").style.display = "block";
+      const prompt =
+        d.phase === "canvassing"
+          ? "拉票环节已开始，投票通道开放。"
+          : "最后投票中，请确认你的分数。";
+      setMsg("voteMsg", prompt, "notice");
     }
   } catch (e) {
-    setMsg('voteMsg', e.message, 'error');
+    setMsg("voteMsg", e.message, "error");
   }
 }
 async function submitVote() {
   try {
-    if (!selectedScore) throw new Error('Please choose a score first.');
+    if (!selectedScore) throw new Error("Please choose a score first.");
     const state = await fetchState();
     const d = derivePhase(state);
-    if (!(d.phase === 'canvassing' || d.phase === 'thinking') || !state.voting_open || !state.current_group_id) {
-      throw new Error('Voting is not open now.');
+    if (
+      !(d.phase === "canvassing" || d.phase === "thinking") ||
+      !state.voting_open ||
+      !state.current_group_id
+    ) {
+      throw new Error("Voting is not open now.");
     }
-    const { error } = await getClient().from('votes').insert({ group_id: state.current_group_id, voter_token: ensureToken(), score: selectedScore });
+    const { error } = await getClient().from("votes").insert({
+      group_id: state.current_group_id,
+      voter_token: ensureToken(),
+      score: selectedScore,
+    });
     if (error) {
-      if (String(error.message).includes('duplicate') || error.code === '23505') throw new Error('You have already voted for this group.');
+      if (String(error.message).includes("duplicate") || error.code === "23505")
+        throw new Error("You have already voted for this group.");
       throw error;
     }
-    setMsg('voteMsg', `投票成功。Your score: ${selectedScore}`, 'success');
+    setMsg("voteMsg", `投票成功。Your score: ${selectedScore}`, "success");
     await renderVote();
   } catch (e) {
-    setMsg('voteMsg', e.message, 'error');
+    setMsg("voteMsg", e.message, "error");
   }
 }
