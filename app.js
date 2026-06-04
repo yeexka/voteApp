@@ -315,6 +315,34 @@ function setMsg(id, text, type = "notice") {
   el.style.display = text ? "block" : "none";
 }
 
+function emojiConfetti(count = 90) {
+  const emojis = ["🎉", "🎊", "✨", "⭐", "🏆", "🥳", "🌟", "💫"];
+
+  return `<div class="emoji-confetti-layer">
+    ${Array.from({ length: count })
+      .map(() => {
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        const size = 22 + Math.random() * 34;
+        const delay = Math.random() * 4;
+        const duration = 3.5 + Math.random() * 3;
+        const rotate = Math.random() * 720 - 360;
+        const drift = Math.random() * 160 - 80;
+
+        return `<span style="
+          left:${left}%;
+          top:${top}%;
+          font-size:${size}px;
+          animation-delay:${delay}s;
+          animation-duration:${duration}s;
+          --rotate:${rotate}deg;
+          --drift:${drift}px;
+        ">${emoji}</span>`;
+      })
+      .join("")}
+  </div>`;
+}
 function hiddenNav() {
   return `<nav class="hidden-nav" aria-label="Hidden navigation">
     <button class="hidden-nav-toggle" type="button" onclick="toggleHiddenNav(event)">☰</button>
@@ -639,6 +667,7 @@ async function renderResultsBarChart() {
   const rest = results.slice(3);
   wrap.innerHTML = `
 <div class="side-fireworks">
+${emojiConfetti(60)}
   <div class="firework left">
     <span></span><span></span><span></span><span></span><span></span>
     <span></span><span></span><span></span><span></span><span></span>
@@ -850,7 +879,9 @@ async function renderAdminStatusOnly() {
 
 async function clearGroupVotes(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(`确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`);
+  const ok = confirm(
+    `确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`,
+  );
   if (!ok) return;
 
   const { error } = await getClient()
@@ -869,7 +900,9 @@ async function clearGroupVotes(groupId) {
 
 async function restartGroupVoting(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(`确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`);
+  const ok = confirm(
+    `确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`,
+  );
   if (!ok) return;
 
   const { error } = await getClient()
@@ -918,7 +951,9 @@ function fillEmergencyScoreForm(groupId, voteCount = 1, avgScore = 8) {
 
   if (groupSelect) groupSelect.value = String(groupId);
   if (countInput) countInput.value = voteCount && voteCount > 0 ? voteCount : 1;
-  if (avgInput) avgInput.value = avgScore && avgScore > 0 ? Number(avgScore).toFixed(2) : "";
+  if (avgInput)
+    avgInput.value =
+      avgScore && avgScore > 0 ? Number(avgScore).toFixed(2) : "";
 
   const panel = document.querySelector(".emergency-score-panel");
   if (panel) panel.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -967,7 +1002,11 @@ async function applyEmergencyScore() {
     return;
   }
 
-  if (!Number.isFinite(targetAverage) || targetAverage < 1 || targetAverage > 10) {
+  if (
+    !Number.isFinite(targetAverage) ||
+    targetAverage < 1 ||
+    targetAverage > 10
+  ) {
     alert("目标均分必须在 1 到 10 之间。");
     return;
   }
@@ -978,10 +1017,10 @@ async function applyEmergencyScore() {
 
   const ok = confirm(
     `确定清空「${group ? group.name : groupId}」原有投票，并写入应急成绩吗？\n\n` +
-    `投票人数：${scores.length}\n` +
-    `总分：${realTotal}\n` +
-    `实际均分：${realAverage.toFixed(2)}\n\n` +
-    `注意：因为 votes 表单个分数只能是 1 到 10 的整数，系统会自动生成最接近目标均分的投票记录。`
+      `投票人数：${scores.length}\n` +
+      `总分：${realTotal}\n` +
+      `实际均分：${realAverage.toFixed(2)}\n\n` +
+      `注意：因为 votes 表单个分数只能是 1 到 10 的整数，系统会自动生成最接近目标均分的投票记录。`,
   );
 
   if (!ok) return;
@@ -1012,9 +1051,9 @@ async function applyEmergencyScore() {
 
   alert(
     `已写入「${group ? group.name : groupId}」应急成绩。\n\n` +
-    `投票人数：${scores.length}\n` +
-    `总分：${realTotal}\n` +
-    `均分：${realAverage.toFixed(2)}`
+      `投票人数：${scores.length}\n` +
+      `总分：${realTotal}\n` +
+      `均分：${realAverage.toFixed(2)}`,
   );
 
   await renderAdmin();
@@ -1047,7 +1086,6 @@ async function resetAll() {
   await goHome();
   await renderAdmin();
 }
-
 
 async function initVote() {
   ensureToken();
