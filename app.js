@@ -519,7 +519,6 @@ async function renderScreen() {
         wrap.className = "closed-screen-page";
         wrap.innerHTML = `
           <section class="closed-card">
-            <div class="screen-kicker">VOTING CLOSED</div>
             <h1 class="closed-title">${esc(group.name)}</h1>
             <div class="perform-work">《${esc(group.work)}》</div>
             <p class="closed-line">本组投票已结束</p>
@@ -586,12 +585,12 @@ async function renderScreen() {
         $("screenPhase").textContent = "拉票环节倒计时";
         $("screenTimer").textContent = fmt(phaseLeft);
         $("screenHint").textContent = "观众可扫码进入投票，本阶段为拉票时间。";
-        label.textContent = "CANVASSING";
+        label.textContent = "激情拉票中！";
       } else {
         $("screenPhase").textContent = "现场观众投票倒计时";
         $("screenTimer").textContent = fmt(phaseLeft);
         $("screenHint").textContent = "最后投票中，请现场观众确认分数。";
-        label.textContent = "FINAL VOTE";
+        label.textContent = "请投我们一票！";
       }
       ringWrap.classList.add("is-active");
       if (phaseLeft <= 10000) ringWrap.classList.add("is-ending");
@@ -773,7 +772,7 @@ async function renderVote() {
       $("voteControls").style.display = "none";
       setMsg(
         "voteMsg",
-        `你已完成本组投票。Your score: ${voted.score}`,
+        `感谢你完成本组投票。你给出的分数是: ${voted.score}`,
         "success",
       );
     } else {
@@ -781,7 +780,7 @@ async function renderVote() {
       const prompt =
         d.phase === "canvassing"
           ? "拉票环节已开始，投票通道开放。"
-          : "最后投票中，请确认你的分数。";
+          : "最后投票中，请确认你要给出的分数。";
       setMsg("voteMsg", prompt, "notice");
     }
   } catch (e) {
@@ -810,7 +809,11 @@ async function submitVote() {
         throw new Error("You have already voted for this group.");
       throw error;
     }
-    setMsg("voteMsg", `投票成功。Your score: ${selectedScore}`, "success");
+    setMsg(
+      "voteMsg",
+      `感谢你完成本组投票。你给出的分数是: ${selectedScore}`,
+      "success",
+    );
     await renderVote();
   } catch (e) {
     setMsg("voteMsg", e.message, "error");
