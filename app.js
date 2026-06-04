@@ -182,6 +182,12 @@ function fmt(ms) {
   const r = s % 60;
   return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
 }
+
+function formatScore(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "-";
+  return (Math.round(n * 100) / 100).toFixed(2);
+}
 function getVoteUrl() {
   const base =
     cfg.PUBLIC_BASE_URL && cfg.PUBLIC_BASE_URL.trim()
@@ -313,34 +319,6 @@ function setMsg(id, text, type = "notice") {
   el.className = `notice ${type}`;
   el.textContent = text;
   el.style.display = text ? "block" : "none";
-}
-function emojiConfetti(count = 90) {
-  const emojis = ["🎉", "🎊", "✨", "⭐", "🏆", "🥳", "🌟", "💫"];
-
-  return `<div class="emoji-confetti-layer">
-    ${Array.from({ length: count })
-      .map(() => {
-        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-        const left = Math.random() * 100;
-        const top = Math.random() * 100;
-        const size = 22 + Math.random() * 34;
-        const delay = Math.random() * 4;
-        const duration = 3.5 + Math.random() * 3;
-        const rotate = Math.random() * 720 - 360;
-        const drift = Math.random() * 160 - 80;
-
-        return `<span style="
-          left:${left}%;
-          top:${top}%;
-          font-size:${size}px;
-          animation-delay:${delay}s;
-          animation-duration:${duration}s;
-          --rotate:${rotate}deg;
-          --drift:${drift}px;
-        ">${emoji}</span>`;
-      })
-      .join("")}
-  </div>`;
 }
 
 function hiddenNav() {
@@ -606,7 +584,9 @@ async function renderScreen() {
 
     if ((d.phase === "canvassing" || d.phase === "thinking") && group) {
       $("stageKicker").textContent =
-        d.phase === "canvassing" ? "拉票环节" : "最后投票";
+        d.phase === "canvassing"
+          ? "CANVASSING TIME · 拉票环节"
+          : "FINAL VOTING · 最后投票";
       $("screenGroup").textContent = group.name;
       $("screenWork").textContent = `《${group.work}》`;
       const coverSlot = $("votingCoverSlot");
@@ -664,22 +644,7 @@ async function renderResultsBarChart() {
   const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean);
   const rest = results.slice(3);
   wrap.innerHTML = `
-<div class="side-fireworks">
-${emojiConfetti(120)}
-  <div class="firework left">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
-
-  <div class="firework right">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
-</div>
+<div class="results-static-glow" aria-hidden="true"></div>
     <section class="results-card premium-results-card">
       <div class="screen-kicker">FINAL RESULTS</div>
       <h1 class="results-title">比赛结果</h1>
@@ -698,7 +663,7 @@ ${emojiConfetti(120)}
                       : "季军";
                 const icon =
                   originalRank === 1 ? "🥇" : originalRank === 2 ? "🥈" : "🥉";
-                const score = r.vote_count ? r.average_score.toFixed(2) : "-";
+                const score = r.vote_count ? formatScore(r.average_score) : "-";
                 return `<div class="podium-card podium-${originalRank}">
             <div class="podium-icon">${icon}</div>
             <div class="podium-medal">${medal}</div>
@@ -718,7 +683,7 @@ ${emojiConfetti(120)}
               0,
               Math.min(100, (r.average_score / maxScore) * 100),
             );
-            const score = r.vote_count ? r.average_score.toFixed(2) : "-";
+            const score = r.vote_count ? formatScore(r.average_score) : "-";
             return `<div class="bar-row refined-bar-row">
             <div class="bar-rank">${realRank}</div>
             <div class="bar-main">
@@ -854,7 +819,7 @@ async function renderAdmin() {
           <td>《${esc(r.work)}》</td>
           <td>${r.voteCount}</td>
           <td>${r.totalScore}</td>
-          <td>${r.voteCount ? r.avgScore.toFixed(2) : "-"}</td>
+          <td>${r.voteCount ? formatScore(r.avgScore) : "-"}</td>
           <td class="admin-op-cell">
             <button class="small danger" onclick="clearGroupVotes(${r.id})">清空票数</button>
             <button class="small" onclick="restartGroupVoting(${r.id})">重新开放投票</button>
@@ -877,9 +842,7 @@ async function renderAdminStatusOnly() {
 
 async function clearGroupVotes(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(
-    `确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`,
-  );
+  const ok = confirm(`确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`);
   if (!ok) return;
 
   const { error } = await getClient()
@@ -898,9 +861,7 @@ async function clearGroupVotes(groupId) {
 
 async function restartGroupVoting(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(
-    `确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`,
-  );
+  const ok = confirm(`确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`);
   if (!ok) return;
 
   const { error } = await getClient()
@@ -949,9 +910,7 @@ function fillEmergencyScoreForm(groupId, voteCount = 1, avgScore = 8) {
 
   if (groupSelect) groupSelect.value = String(groupId);
   if (countInput) countInput.value = voteCount && voteCount > 0 ? voteCount : 1;
-  if (avgInput)
-    avgInput.value =
-      avgScore && avgScore > 0 ? Number(avgScore).toFixed(2) : "";
+  if (avgInput) avgInput.value = avgScore && avgScore > 0 ? formatScore(avgScore) : "";
 
   const panel = document.querySelector(".emergency-score-panel");
   if (panel) panel.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -1000,11 +959,7 @@ async function applyEmergencyScore() {
     return;
   }
 
-  if (
-    !Number.isFinite(targetAverage) ||
-    targetAverage < 1 ||
-    targetAverage > 10
-  ) {
+  if (!Number.isFinite(targetAverage) || targetAverage < 1 || targetAverage > 10) {
     alert("目标均分必须在 1 到 10 之间。");
     return;
   }
@@ -1015,10 +970,10 @@ async function applyEmergencyScore() {
 
   const ok = confirm(
     `确定清空「${group ? group.name : groupId}」原有投票，并写入应急成绩吗？\n\n` +
-      `投票人数：${scores.length}\n` +
-      `总分：${realTotal}\n` +
-      `实际均分：${realAverage.toFixed(2)}\n\n` +
-      `注意：因为 votes 表单个分数只能是 1 到 10 的整数，系统会自动生成最接近目标均分的投票记录。`,
+    `投票人数：${scores.length}\n` +
+    `总分：${realTotal}\n` +
+    `实际均分：${formatScore(realAverage)}\n\n` +
+    `注意：因为 votes 表单个分数只能是 1 到 10 的整数，系统会自动生成最接近目标均分的投票记录。`
   );
 
   if (!ok) return;
@@ -1049,9 +1004,9 @@ async function applyEmergencyScore() {
 
   alert(
     `已写入「${group ? group.name : groupId}」应急成绩。\n\n` +
-      `投票人数：${scores.length}\n` +
-      `总分：${realTotal}\n` +
-      `均分：${realAverage.toFixed(2)}`,
+    `投票人数：${scores.length}\n` +
+    `总分：${realTotal}\n` +
+    `均分：${formatScore(realAverage)}`
   );
 
   await renderAdmin();
@@ -1084,6 +1039,7 @@ async function resetAll() {
   await goHome();
   await renderAdmin();
 }
+
 
 async function initVote() {
   ensureToken();
@@ -1169,7 +1125,7 @@ async function renderVote() {
       $("voteControls").style.display = "block";
       const prompt =
         d.phase === "canvassing"
-          ? "当前为拉票环节，可进行投票，也可等待拉票后再进行投票，请注意每人每组仅可打分一次。"
+          ? "当前为拉票环节，可先完成投票，也可等待最后投票阶段。"
           : "当前为最后投票阶段，请确认并提交你的分数。";
       setMsg("voteMsg", prompt, "notice");
     }

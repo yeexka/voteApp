@@ -3454,3 +3454,107 @@ body.screen-page {
       scale(0.8);
   }
 }
+
+/* ===== Results page light mode: reduce lag and visual noise ===== */
+
+/* 强制关掉旧版烟花和 emoji 层，避免结果页卡顿 */
+.side-fireworks,
+.firework,
+.emoji-confetti-layer,
+.paper-confetti,
+.confetti-layer {
+  display: none !important;
+  animation: none !important;
+}
+
+/* 轻量静态氛围，不用大量 DOM 和动画 */
+.results-static-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 16% 18%,
+      rgba(255, 232, 142, 0.22),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 84% 18%,
+      rgba(255, 232, 142, 0.2),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 50% 96%,
+      rgba(255, 255, 255, 0.1),
+      transparent 26%
+    );
+}
+
+/* 结果卡片放在静态氛围上方 */
+.results-card {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* 减少重阴影和复杂滤镜，大屏更顺滑 */
+.premium-results-card,
+.podium-card,
+.refined-bar-row {
+  backdrop-filter: none !important;
+  filter: none !important;
+}
+
+.premium-results-card {
+  box-shadow: 0 18px 48px rgba(0, 45, 38, 0.24) !important;
+}
+
+.podium-card {
+  box-shadow: 0 14px 34px rgba(0, 45, 38, 0.18) !important;
+  transition: none !important;
+}
+
+/* 只突出冠军，且不再做动画 */
+.podium-card {
+  transform: none !important;
+}
+
+.podium-1 {
+  transform: scale(1.05) translateY(-12px) !important;
+  box-shadow:
+    0 0 28px rgba(255, 225, 120, 0.26),
+    0 18px 42px rgba(0, 45, 38, 0.22) !important;
+  z-index: 3 !important;
+}
+
+.podium-2,
+.podium-3 {
+  transform: none !important;
+}
+
+/* 取消可能残留的闪烁/飘动动画 */
+.results-screen *,
+.podium-card *,
+.bar-row *,
+.bar-fill {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+}
+
+/* 让后面的条形榜更紧凑，减少页面负担 */
+.refined-bar-list {
+  gap: 8px !important;
+}
+
+.refined-bar-row {
+  min-height: 48px !important;
+  padding: 8px 14px !important;
+}
+
+.bar-track {
+  height: 10px !important;
+}
+
+.bar-fill {
+  transition: none !important;
+}
