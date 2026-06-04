@@ -1728,3 +1728,389 @@ body.screen-page {
     text-align: center;
   }
 }
+
+
+/* ===== Final visual polish: clear text over clean background, not blurry baked-in poster text. ===== */
+.home-code-screen {
+  min-height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 48% 45%, rgba(255,255,255,.08), transparent 30%),
+    linear-gradient(rgba(0, 104, 86, .05), rgba(0, 71, 60, .12)),
+    url("assets/ums-clean-bg.jpg") center center / cover no-repeat;
+}
+.home-code-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0,120,96,.08), rgba(0,72,60,.10)),
+    radial-gradient(circle at 80% 75%, rgba(255,255,255,.10), transparent 30%);
+  pointer-events: none;
+}
+.home-code-card {
+  width: min(1320px, 92vw);
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: clamp(44px, 5vw, 82px) clamp(28px, 4vw, 70px);
+}
+.home-logo-text {
+  position: absolute;
+  left: clamp(10px, 1vw, 20px);
+  top: clamp(4px, 1vw, 14px);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(54px, 6vw, 104px);
+  letter-spacing: .02em;
+  color: rgba(255,255,255,.92);
+  text-shadow: 0 8px 24px rgba(0, 67, 55, .25);
+}
+.home-kicker {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 30px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255,255,255,.13);
+  border: 1px solid rgba(255,255,255,.34);
+  font-size: clamp(15px, 1.35vw, 22px);
+  font-weight: 950;
+  letter-spacing: .24em;
+  backdrop-filter: blur(8px);
+  animation: softFadeDown .8s ease both;
+}
+.home-main-title {
+  margin: clamp(38px, 5vw, 72px) 0 18px;
+  color: #fff;
+  font-size: clamp(58px, 6.4vw, 118px);
+  line-height: 1.18;
+  font-weight: 950;
+  letter-spacing: .02em;
+  text-shadow:
+    0 4px 0 rgba(0, 80, 65, .22),
+    0 16px 42px rgba(0, 54, 48, .34);
+  animation: titleRise .9s ease .12s both;
+}
+.home-main-title span {
+  font-size: 1.08em;
+}
+.home-subtitle {
+  margin: 0;
+  font-size: clamp(26px, 2.4vw, 44px);
+  color: rgba(255,255,255,.90);
+  font-weight: 900;
+  letter-spacing: .18em;
+  animation: softFadeUp .9s ease .25s both;
+}
+.home-status-pill {
+  margin-top: clamp(34px, 4vw, 58px);
+  display: inline-flex;
+  padding: 14px 36px;
+  border-radius: 999px;
+  color: #005141;
+  background: rgba(255,255,255,.94);
+  font-size: clamp(20px, 1.7vw, 30px);
+  font-weight: 950;
+  box-shadow: 0 18px 54px rgba(0, 65, 54, .22);
+  animation: breathingPill 2.2s ease-in-out infinite;
+}
+
+/* Competition entry slight refinement */
+.menu-card {
+  padding: clamp(34px, 4.2vw, 66px);
+}
+.group-button-grid {
+  gap: 22px;
+}
+.group-entry-btn {
+  border-radius: 30px;
+  min-height: 126px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(235,255,251,.94));
+  border: 1px solid rgba(255,255,255,.56);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.group-entry-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 64px rgba(0, 45, 38, .30);
+  background: #fff;
+}
+
+/* Participants redesign */
+.participants-screen {
+  align-items: stretch;
+}
+.participants-card {
+  min-height: calc(100vh - 96px);
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  align-items: center;
+  overflow: hidden;
+}
+.participants-title {
+  font-size: clamp(54px, 6.2vw, 108px);
+  margin-bottom: 26px;
+}
+.participants-grid {
+  align-self: center;
+  width: min(1080px, 94%);
+  margin: 18px auto 26px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 16px;
+}
+.participants-grid span {
+  min-width: 108px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10));
+  border: 1px solid rgba(255,255,255,.28);
+  color: #ffffff;
+  font-size: clamp(16px, 1.18vw, 21px);
+  font-weight: 950;
+  box-shadow: 0 10px 26px rgba(0, 44, 38, .14);
+  backdrop-filter: blur(5px);
+}
+.participants-grid span:nth-child(3n + 1) {
+  background: rgba(255,255,255,.18);
+}
+.participants-grid span:nth-child(3n + 2) {
+  background: rgba(185,255,237,.14);
+}
+.participants-footer {
+  width: min(1080px, 94%);
+  justify-self: center;
+  padding: 18px 26px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.24);
+  color: #fff;
+  font-size: clamp(23px, 2.1vw, 38px);
+  font-weight: 950;
+}
+
+/* Results redesign: no flashing, top 3 featured */
+.premium-results-card {
+  width: min(1240px, 94vw);
+}
+.podium-wrap {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin: 22px 0 30px;
+  align-items: stretch;
+}
+.podium-card {
+  position: relative;
+  padding: 24px 20px;
+  border-radius: 34px;
+  text-align: center;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.30);
+  box-shadow: 0 20px 60px rgba(0, 43, 36, .22);
+  overflow: hidden;
+  animation: podiumIn .7s ease both;
+}
+.podium-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,.26), transparent 42%);
+  pointer-events: none;
+}
+.podium-1 {
+  transform: scale(1.04);
+  background: linear-gradient(180deg, rgba(255,255,255,.30), rgba(187,255,239,.16));
+  border-color: rgba(255,255,255,.56);
+}
+.podium-icon {
+  font-size: clamp(42px, 4vw, 72px);
+  line-height: 1;
+}
+.podium-medal {
+  margin-top: 8px;
+  color: rgba(255,255,255,.86);
+  font-weight: 950;
+  letter-spacing: .18em;
+}
+.podium-name {
+  margin-top: 12px;
+  font-size: clamp(28px, 3vw, 52px);
+  color: #fff;
+  font-weight: 950;
+}
+.podium-work {
+  margin-top: 8px;
+  font-size: clamp(18px, 1.7vw, 28px);
+  color: rgba(255,255,255,.82);
+  font-weight: 850;
+}
+.podium-score {
+  margin-top: 16px;
+  font-size: clamp(34px, 4vw, 68px);
+  color: #fff;
+  font-weight: 950;
+  text-shadow: 0 10px 30px rgba(0, 70, 58, .30);
+}
+.refined-bar-list {
+  gap: 12px;
+}
+.refined-bar-row {
+  animation: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+.refined-bar-row .bar-track {
+  height: 18px;
+}
+.refined-bar-row .bar-fill {
+  transition: width .6s ease;
+}
+
+@keyframes titleRise {
+  from { opacity: 0; transform: translateY(26px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes softFadeDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes softFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes breathingPill {
+  0%, 100% { transform: scale(1); box-shadow: 0 18px 54px rgba(0, 65, 54, .22); }
+  50% { transform: scale(1.035); box-shadow: 0 24px 68px rgba(0, 65, 54, .32); }
+}
+@keyframes podiumIn {
+  from { opacity: 0; transform: translateY(20px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 980px) {
+  .home-logo-text {
+    position: static;
+    margin-bottom: 18px;
+  }
+  .home-main-title {
+    font-size: clamp(42px, 10vw, 76px);
+  }
+  .podium-wrap {
+    grid-template-columns: 1fr;
+  }
+  .podium-1 {
+    transform: none;
+  }
+}
+
+
+/* ===== Group video cover images ===== */
+/* 放封面，但不让封面抢戏。终于不是把所有东西都挤成一锅了。 */
+
+.performing-card {
+  width: min(1280px, 94vw);
+}
+
+.perform-cover {
+  width: min(560px, 70vw);
+  aspect-ratio: 16 / 9;
+  margin: 18px auto 24px;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.34);
+  box-shadow: 0 24px 70px rgba(0, 40, 34, .30);
+  background: rgba(255,255,255,.10);
+}
+
+.perform-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 演绎页封面较大，投票页封面较小。投票页主角是二维码和倒计时，封面别篡位。 */
+.voting-cover {
+  width: min(360px, 48vw);
+  aspect-ratio: 16 / 9;
+  margin: 18px 0 22px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.28);
+  box-shadow: 0 16px 46px rgba(0, 40, 34, .24);
+  background: rgba(255,255,255,.10);
+}
+
+.voting-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 如果左侧信息太满，让它更像展示卡，而不是堆字仓库。 */
+.voting-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.voting-screen .voting-group {
+  margin-bottom: 8px;
+}
+
+.voting-screen .voting-work {
+  margin-top: 4px;
+}
+
+.voting-screen .voting-members {
+  margin-top: 2px;
+  margin-bottom: 22px;
+}
+
+/* 大屏宽度足够时，演绎页用左右布局：左文字，右封面，更像节目介绍页。 */
+@media (min-width: 1100px) {
+  .performing-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(420px, .72fr);
+    column-gap: 38px;
+    align-items: center;
+    text-align: left;
+  }
+
+  .performing-card .screen-kicker,
+  .performing-card .perform-title,
+  .performing-card .perform-work,
+  .performing-card .perform-members,
+  .performing-card .performing-label,
+  .performing-card .stage-controls {
+    grid-column: 1;
+  }
+
+  .performing-card .perform-cover {
+    grid-column: 2;
+    grid-row: 1 / span 6;
+    width: 100%;
+    margin: 0;
+  }
+
+  .performing-card .stage-controls {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 980px) {
+  .voting-cover {
+    margin-left: auto;
+    margin-right: auto;
+    width: min(460px, 82vw);
+  }
+}

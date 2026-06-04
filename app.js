@@ -201,6 +201,10 @@ function getVoteUrl() {
   return `${base}/vote.html`;
 }
 function getGroupById(id) { return COMPETITION_GROUPS.find(g => g.id === Number(id)); }
+function groupCover(g) { return g ? `assets/group${g.id}.jpg` : ''; }
+function coverImg(g, className = 'cover-image') {
+  return `<div class="${className}"><img src="${groupCover(g)}" alt="${esc(safeName(g))} cover" onerror="this.closest('.${className}').style.display='none'"></div>`;
+}
 
 function setRingProgress(el, remainingMs, totalMs, circumference) {
   if (!el) return;
@@ -363,9 +367,11 @@ async function renderScreen() {
     const state = await fetchState();
     const d = derivePhase(state);
     const group = getGroupById(state.current_group_id);
-    if (d.phase === 'ranking') return renderResultsBarChart();
-
     const wrap = $('screenMain');
+    if (d.phase === 'ranking') {
+      if (screenLayoutKey !== 'ranking' || !wrap.dataset.ready) return renderResultsBarChart();
+      return;
+    }
     const layoutKey = `${d.phase}-${state.current_group_id || 'none'}`;
     const shouldRebuild = screenLayoutKey !== layoutKey || !wrap.dataset.ready;
 
@@ -375,8 +381,19 @@ async function renderScreen() {
       wrap.innerHTML = '';
 
       if (d.phase === 'idle') {
-        wrap.className = 'bigscreen-shell home-only-screen';
-        wrap.innerHTML = `<section class="waiting-screen ums-welcome" aria-label="Competition homepage"></section>${hiddenNav()}`;
+        wrap.className = 'home-code-screen';
+        wrap.innerHTML = `
+          <section class="home-code-card">
+            <div class="home-logo-text">UMS</div>
+            <div class="home-kicker">2025-2026 · FIRST DUBBING COMPETITION</div>
+            <h1 class="home-main-title">
+              马来西亚沙巴大学2+2国际本科首届<br>
+              <span>“声临其境”杯配音大赛</span>
+            </h1>
+            <p class="home-subtitle">以声入戏，以译传情</p>
+            <div class="home-status-pill">等待比赛开始</div>
+          </section>
+          ${hiddenNav()}`;
         return;
       }
 
@@ -417,6 +434,7 @@ async function renderScreen() {
             <div class="screen-kicker">NOW PERFORMING / 正在演绎</div>
             <h1 class="perform-title">${esc(group.name)}</h1>
             <div class="perform-work">《${esc(group.work)}》</div>
+            ${coverImg(group, 'perform-cover')}
             <div class="perform-members">${esc(safeMembers(group))}</div>
             <div class="performing-label">演绎中</div>
             <div class="stage-controls">
@@ -452,6 +470,7 @@ async function renderScreen() {
             <div class="voting-kicker" id="stageKicker"></div>
             <h1 id="screenGroup" class="voting-group"></h1>
             <div class="voting-work" id="screenWork"></div>
+            <div id="votingCoverSlot"></div>
             <div class="voting-members" id="screenMembers"></div>
             <div id="screenPhase" class="voting-phase"></div>
             <p id="screenHint" class="voting-hint"></p>
@@ -478,6 +497,11 @@ async function renderScreen() {
       $('stageKicker').textContent = d.phase === 'canvassing' ? '拉票环节' : '最后投票';
       $('screenGroup').textContent = group.name;
       $('screenWork').textContent = `《${group.work}》`;
+      const coverSlot = $('votingCoverSlot');
+      if (coverSlot && !coverSlot.dataset.coverReady) {
+        coverSlot.innerHTML = coverImg(group, 'voting-cover');
+        coverSlot.dataset.coverReady = '1';
+      }
       $('screenMembers').textContent = safeMembers(group);
 
       const ring = $('ringProgress');
@@ -514,16 +538,36 @@ async function renderResultsBarChart() {
   wrap.dataset.ready = '1';
   wrap.className = 'results-screen';
   const maxScore = 10;
+  const top3 = results.slice(0, 3);
+  const rest = results.slice(3);
+
   wrap.innerHTML = `
-    <section class="results-card">
+    <section class="results-card premium-results-card">
       <div class="screen-kicker">FINAL RESULTS</div>
       <h1 class="results-title">比赛结果</h1>
-      <div class="bar-list">
-        ${results.map((r, i) => {
+
+      <div class="podium-wrap">
+        ${top3.map((r, i) => {
+          const medal = i === 0 ? '冠军' : i === 1 ? '亚军' : '季军';
+          const icon = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+          const score = r.vote_count ? r.average_score.toFixed(2) : '-';
+          return `<div class="podium-card podium-${i + 1}">
+            <div class="podium-icon">${icon}</div>
+            <div class="podium-medal">${medal}</div>
+            <div class="podium-name">${esc(r.name)}</div>
+            <div class="podium-work">《${esc(r.work)}》</div>
+            <div class="podium-score">${score}</div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="bar-list refined-bar-list">
+        ${rest.map((r, i) => {
+          const realRank = i + 4;
           const width = Math.max(0, Math.min(100, (r.average_score / maxScore) * 100));
           const score = r.vote_count ? r.average_score.toFixed(2) : '-';
-          return `<div class="bar-row" style="animation-delay:${Math.min(i * 0.06, .5)}s">
-            <div class="bar-rank">${i + 1}</div>
+          return `<div class="bar-row refined-bar-row">
+            <div class="bar-rank">${realRank}</div>
             <div class="bar-main">
               <div class="bar-label"><b>${esc(r.name)}</b><span>《${esc(r.work)}》</span></div>
               <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
@@ -535,7 +579,6 @@ async function renderResultsBarChart() {
     </section>
     ${hiddenNav()}`;
 }
-
 // Legacy admin page compatibility.
 function requireAdmin() { return true; }
 async function initAdmin() {
