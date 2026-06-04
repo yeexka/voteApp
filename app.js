@@ -469,7 +469,6 @@ async function renderScreen() {
         wrap.className = "menu-screen";
         wrap.innerHTML = `
           <section class="menu-card">
-            <div class="screen-kicker">COMPETITION ENTRY</div>
             <h1 class="menu-title">比赛入口</h1>
             <p class="menu-subtitle">请选择即将演绎的小组</p>
             <div class="group-button-grid">
@@ -501,7 +500,7 @@ async function renderScreen() {
         wrap.className = "performing-screen";
         wrap.innerHTML = `
           <section class="performing-card">
-            <div class="screen-kicker">NOW PERFORMING / 正在演绎</div>
+            <div class="screen-kicker">NOW PERFORMING 正在演绎</div>
             <h1 class="perform-title">${esc(group.name)}</h1>
             <div class="perform-work">《${esc(group.work)}》</div>
             ${coverImg(group, "perform-cover")}
