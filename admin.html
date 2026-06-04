@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dubbing Vote Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</head>
+<body class="admin-page" onload="initAdmin()">
+  <div class="page">
+    <div class="topbar">
+      <div>
+        <div class="brand">配音比赛后台</div>
+        <div class="subtle">Admin controls everything. 大屏别碰按钮，现场少一份尴尬。</div>
+      </div>
+      <a class="status-pill" href="screen.html" target="_blank">Open Screen</a>
+    </div>
+
+    <div class="admin-grid">
+      <div class="card">
+        <h2>小组名称 / Groups</h2>
+        <div id="groupList"></div>
+      </div>
+
+      <div class="card">
+        <h2>比赛控制 / Control</h2>
+        <label class="subtle">Current Group</label>
+        <div class="row"><select id="currentGroup"></select></div>
+        <div class="grid">
+          <button class="good" onclick="startVoting()">Start 2-min Voting</button>
+          <button class="secondary" onclick="closeVoting()">Close Now</button>
+          <button onclick="showRanking()">Show Ranking</button>
+          <button class="secondary" onclick="backIdle()">Back to Idle</button>
+          <button class="danger" onclick="resetCurrentGroup()">Reset Current Votes</button>
+          <button class="danger" onclick="resetAll()">Reset All</button>
+        </div>
+        <div id="adminMsg" class="notice" style="display:none"></div>
+
+        <h2>当前状态 / Status</h2>
+        <p>Group: <b id="adminCurrent">-</b></p>
+        <p>Phase: <b id="adminPhase">-</b></p>
+        <p>Timer: <b id="adminTimer">--:--</b></p>
+        <p>Votes: <b id="adminVotes">0</b></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dubbing Vote</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</head>
+<body class="vote-page" onload="initVote()">
+  <div class="mobile-shell">
+    <div class="mobile-card">
+      <div class="mobile-topline">
+        <span>DUBBING VOTE</span>
+        <span id="votePhase">idle</span>
+      </div>
+
+      <div class="mobile-stage-label">当前投票小组</div>
+      <h1 id="voteGroup" class="mobile-group">Waiting</h1>
+
+      <div class="mini-ring-wrap">
+        <svg class="mini-ring" viewBox="0 0 140 140">
+          <circle class="mini-ring-bg" cx="70" cy="70" r="58"></circle>
+          <circle class="mini-ring-progress" id="voteRingProgress" cx="70" cy="70" r="58"></circle>
+        </svg>
+        <div class="mini-ring-content">
+          <div class="mini-time" id="voteTimer">--:--</div>
+        </div>
+      </div>
+
+      <div id="voteMsg" class="notice"></div>
+
+      <div id="voteControls" style="display:none">
+        <p class="subtle mobile-instruction">请给当前小组打分 / Rate this group from 1 to 10</p>
+        <div class="score-grid">
+          <button class="score-btn" data-score="1">1</button>
+          <button class="score-btn" data-score="2">2</button>
+          <button class="score-btn" data-score="3">3</button>
+          <button class="score-btn" data-score="4">4</button>
+          <button class="score-btn" data-score="5">5</button>
+          <button class="score-btn" data-score="6">6</button>
+          <button class="score-btn" data-score="7">7</button>
+          <button class="score-btn" data-score="8">8</button>
+          <button class="score-btn" data-score="9">9</button>
+          <button class="score-btn" data-score="10">10</button>
+        </div>
+        <button id="submitVote" class="submit-main">Submit / 提交</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
