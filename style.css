@@ -2649,4 +2649,21 @@ body.screen-page {
     font-size: clamp(42px, 10vw, 78px);
   }
 }
+/* 参赛名单：防止四个字姓名换行 */
+.participants-name-wall {
+  grid-template-columns: repeat(7, 1fr) !important;
+  column-gap: 28px !important;
+  row-gap: 18px !important;
+}
+
+.participants-name-wall span {
+  white-space: nowrap !important;
+  min-width: 120px !important;
+  font-size: clamp(20px, 1.45vw, 26px) !important;
+  letter-spacing: 0.03em !important;
+}
 /* 参赛名单标题位置调整 */
+
+.participants-wall {
+  transform: translateY(-40px) !important;
+}
