@@ -2794,3 +2794,183 @@ body.screen-page {
     0 0 18px rgba(255, 236, 160, 0.35),
     0 10px 28px rgba(0, 60, 50, 0.35) !important;
 }
+/* 结果页：左右持续礼花效果 */
+.side-fireworks {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.firework {
+  position: absolute;
+  top: 50%;
+  width: 220px;
+  height: 420px;
+  transform: translateY(-50%);
+}
+
+.firework.left {
+  left: 18px;
+}
+
+.firework.right {
+  right: 18px;
+}
+
+.firework span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #fff4b8;
+  opacity: 0;
+  animation: sideBurst 1.8s ease-out infinite;
+}
+
+/* 左边向右喷 */
+.firework.left span:nth-child(1) {
+  --x: 120px;
+  --y: -150px;
+  animation-delay: 0s;
+  background: #fff4b8;
+}
+.firework.left span:nth-child(2) {
+  --x: 170px;
+  --y: -110px;
+  animation-delay: 0.12s;
+  background: #ffffff;
+}
+.firework.left span:nth-child(3) {
+  --x: 200px;
+  --y: -60px;
+  animation-delay: 0.24s;
+  background: #a8fff0;
+}
+.firework.left span:nth-child(4) {
+  --x: 190px;
+  --y: 0px;
+  animation-delay: 0.36s;
+  background: #ffd36b;
+}
+.firework.left span:nth-child(5) {
+  --x: 160px;
+  --y: 65px;
+  animation-delay: 0.48s;
+  background: #ffffff;
+}
+.firework.left span:nth-child(6) {
+  --x: 120px;
+  --y: 125px;
+  animation-delay: 0.6s;
+  background: #b8f7ea;
+}
+.firework.left span:nth-child(7) {
+  --x: 230px;
+  --y: -140px;
+  animation-delay: 0.72s;
+  background: #fff4b8;
+}
+.firework.left span:nth-child(8) {
+  --x: 250px;
+  --y: 90px;
+  animation-delay: 0.84s;
+  background: #ffffff;
+}
+.firework.left span:nth-child(9) {
+  --x: 280px;
+  --y: -20px;
+  animation-delay: 0.96s;
+  background: #ffd36b;
+}
+.firework.left span:nth-child(10) {
+  --x: 220px;
+  --y: 150px;
+  animation-delay: 1.08s;
+  background: #a8fff0;
+}
+
+/* 右边向左喷 */
+.firework.right span:nth-child(1) {
+  --x: -120px;
+  --y: -150px;
+  animation-delay: 0s;
+  background: #fff4b8;
+}
+.firework.right span:nth-child(2) {
+  --x: -170px;
+  --y: -110px;
+  animation-delay: 0.12s;
+  background: #ffffff;
+}
+.firework.right span:nth-child(3) {
+  --x: -200px;
+  --y: -60px;
+  animation-delay: 0.24s;
+  background: #a8fff0;
+}
+.firework.right span:nth-child(4) {
+  --x: -190px;
+  --y: 0px;
+  animation-delay: 0.36s;
+  background: #ffd36b;
+}
+.firework.right span:nth-child(5) {
+  --x: -160px;
+  --y: 65px;
+  animation-delay: 0.48s;
+  background: #ffffff;
+}
+.firework.right span:nth-child(6) {
+  --x: -120px;
+  --y: 125px;
+  animation-delay: 0.6s;
+  background: #b8f7ea;
+}
+.firework.right span:nth-child(7) {
+  --x: -230px;
+  --y: -140px;
+  animation-delay: 0.72s;
+  background: #fff4b8;
+}
+.firework.right span:nth-child(8) {
+  --x: -250px;
+  --y: 90px;
+  animation-delay: 0.84s;
+  background: #ffffff;
+}
+.firework.right span:nth-child(9) {
+  --x: -280px;
+  --y: -20px;
+  animation-delay: 0.96s;
+  background: #ffd36b;
+}
+.firework.right span:nth-child(10) {
+  --x: -220px;
+  --y: 150px;
+  animation-delay: 1.08s;
+  background: #a8fff0;
+}
+
+@keyframes sideBurst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 0.95;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) scale(1.15);
+  }
+}
