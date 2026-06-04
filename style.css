@@ -2563,8 +2563,8 @@ body.screen-page {
   min-width: 96px;
   min-height: 40px;
   padding: 7px 14px;
-  color: rgba(218, 189, 0, 0.96);
-  font-size: clamp(17px, 1.25vw, 23px);
+  color: rgba(255, 228, 54, 0.96);
+  font-size: clamp(32px, 1.25vw, 23px);
   font-weight: 850;
   background: transparent;
   border: none;
@@ -2575,16 +2575,6 @@ body.screen-page {
   text-shadow: none !important;
   animation: nameFadeIn 0.5s ease both;
   animation-delay: calc(var(--i) * 0.012s);
-}
-.participants-name-wall span:nth-child(4n + 1) {
-  background: rgba(255, 255, 255, 0.105);
-  border-color: rgba(255, 255, 255, 0.22);
-}
-.participants-name-wall span:nth-child(4n + 2) {
-  background: rgba(181, 255, 235, 0.1);
-}
-.participants-name-wall span:nth-child(4n + 3) {
-  background: rgba(255, 255, 255, 0.055);
 }
 .participants-wall .participants-footer {
   justify-self: center;
