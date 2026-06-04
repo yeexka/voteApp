@@ -2621,6 +2621,21 @@ body.screen-page {
   }
 }
 @media (max-width: 980px) {
+  .participants-wall {
+    padding-top: 28px !important;
+    align-items: start !important;
+  }
+
+  .participants-kicker {
+    margin-top: 0 !important;
+  }
+
+  .participants-wall .participants-title {
+    margin-top: 16px !important;
+    margin-bottom: 28px !important;
+    font-size: clamp(62px, 6.4vw, 108px) !important;
+  }
+
   .participants-name-wall {
     gap: 9px 10px;
   }
@@ -2635,17 +2650,3 @@ body.screen-page {
   }
 }
 /* 参赛名单标题位置调整 */
-.participants-wall {
-  padding-top: 28px !important;
-  align-items: start !important;
-}
-
-.participants-kicker {
-  margin-top: 0 !important;
-}
-
-.participants-wall .participants-title {
-  margin-top: 16px !important;
-  margin-bottom: 28px !important;
-  font-size: clamp(62px, 6.4vw, 108px) !important;
-}
