@@ -413,9 +413,13 @@ async function closeVoting() {
   const d = derivePhase(state);
 
   if (d.phase === "canvassing") {
+    const thinking = Number(cfg.THINKING_SECONDS || 60);
+    const now = new Date().toISOString();
+
     await updateState({
       phase: "thinking",
-      canvassing_end_time: new Date().toISOString(),
+      canvassing_end_time: now,
+      voting_end_time: isoAfter(thinking),
     });
   } else {
     await updateState({
@@ -574,9 +578,7 @@ async function renderScreen() {
 
     if ((d.phase === "canvassing" || d.phase === "thinking") && group) {
       $("stageKicker").textContent =
-        d.phase === "canvassing"
-          ? "CANVASSING TIME · 拉票环节"
-          : "FINAL VOTING · 最后投票";
+        d.phase === "canvassing" ? "拉票环节" : "最后投票";
       $("screenGroup").textContent = group.name;
       $("screenWork").textContent = `《${group.work}》`;
       const coverSlot = $("votingCoverSlot");
@@ -650,7 +652,6 @@ async function renderResultsBarChart() {
   </div>
 </div>
     <section class="results-card premium-results-card">
-      <div class="screen-kicker">FINAL RESULTS</div>
       <h1 class="results-title">比赛结果</h1>
 
       <div class="podium-wrap">
@@ -818,7 +819,9 @@ async function renderAdminStatusOnly() {
 
 async function clearGroupVotes(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(`确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`);
+  const ok = confirm(
+    `确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`,
+  );
   if (!ok) return;
 
   const { error } = await getClient()
@@ -837,7 +840,9 @@ async function clearGroupVotes(groupId) {
 
 async function restartGroupVoting(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(`确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`);
+  const ok = confirm(
+    `确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`,
+  );
   if (!ok) return;
 
   const { error } = await getClient()
@@ -907,7 +912,6 @@ async function resetAll() {
   await renderAdmin();
 }
 
-
 async function initVote() {
   ensureToken();
   document.querySelectorAll(".score-btn").forEach((btn) => {
@@ -975,7 +979,7 @@ async function renderVote() {
       if (d.phase === "performing")
         msg = `${group ? group.name : "当前小组"}正在演绎中，请稍后投票。`;
       if (d.phase === "closed")
-        msg = `${group ? group.name : "该组"}投票已结束。`;
+        msg = `${group ? group.name : "该组"}投票已结束。等待下一组演绎`;
       if (d.phase === "ranking") msg = "比赛结果公布中。";
       setMsg("voteMsg", msg, "notice");
       return;
@@ -992,7 +996,7 @@ async function renderVote() {
       $("voteControls").style.display = "block";
       const prompt =
         d.phase === "canvassing"
-          ? "当前为拉票环节，可先完成投票，也可等待最后投票阶段。"
+          ? "当前为拉票环节，可进行投票，也可等待拉票环节后进行。请注意一人一组仅能投出一票"
           : "当前为最后投票阶段，请确认并提交你的分数。";
       setMsg("voteMsg", prompt, "notice");
     }

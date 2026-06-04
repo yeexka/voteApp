@@ -3219,6 +3219,7 @@ body.screen-page {
     transform: scale(1.045);
   }
 }
+
 /* ===== Admin emergency dashboard ===== */
 .admin-page {
   min-height: 100vh;
