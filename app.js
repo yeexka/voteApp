@@ -592,8 +592,14 @@ async function renderScreen() {
         $("screenHint").textContent = "最后投票中，请现场观众确认分数。";
         label.textContent = "请投我们一票！";
       }
-      ringWrap.classList.add("is-active");
-      if (phaseLeft <= 10000) ringWrap.classList.add("is-ending");
+
+      ringWrap.classList.remove("is-active", "is-ending");
+
+      if (phaseLeft <= 10000) {
+        ringWrap.classList.add("is-ending");
+      } else {
+        ringWrap.classList.add("is-active");
+      }
     }
   } catch (e) {
     document.body.innerHTML = `<main class="bigscreen-shell"><section class="connection-error"><h1>大屏连接异常</h1><p>${esc(e.message)}</p><p>请检查网络或刷新同步。</p><button onclick="location.reload()">刷新同步</button></section></main>`;
