@@ -61,7 +61,7 @@ const COMPETITION_GROUPS = [
 ];
 const PARTICIPANTS = [
   "邱傲然",
-  "张晶始",
+  "张晶贻",
   "金旻志",
   "王梓安",
   "王文煊",
