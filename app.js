@@ -454,8 +454,6 @@ async function renderScreen() {
         wrap.className = "home-code-screen";
         wrap.innerHTML = `
           <section class="home-code-card">
-            <div class="home-logo-text">UMS</div>
-            <div class="home-kicker">2025-2026 · FIRST DUBBING COMPETITION</div>
             <h1 class="home-main-title">
               马来西亚沙巴大学2+2国际本科首届<br>
               <span>“声临其境”杯配音大赛</span>
