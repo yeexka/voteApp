@@ -321,6 +321,35 @@ function setMsg(id, text, type = "notice") {
   el.style.display = text ? "block" : "none";
 }
 
+function emojiConfetti(count = 28) {
+  const emojis = ["🎉", "🎊", "✨", "⭐", "🏆"];
+
+  return `<div class="emoji-confetti-layer light-emoji-confetti">
+    ${Array.from({ length: count })
+      .map(() => {
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        const left = Math.random() * 100;
+        const top = Math.random() * 88;
+        const size = 18 + Math.random() * 18;
+        const delay = Math.random() * 3.2;
+        const duration = 4.5 + Math.random() * 2.8;
+        const rotate = Math.random() * 360 - 180;
+        const drift = Math.random() * 90 - 45;
+
+        return `<span style="
+          left:${left}%;
+          top:${top}%;
+          font-size:${size}px;
+          animation-delay:${delay}s;
+          animation-duration:${duration}s;
+          --rotate:${rotate}deg;
+          --drift:${drift}px;
+        ">${emoji}</span>`;
+      })
+      .join("")}
+  </div>`;
+}
+
 function hiddenNav() {
   return `<nav class="hidden-nav" aria-label="Hidden navigation">
     <button class="hidden-nav-toggle" type="button" onclick="toggleHiddenNav(event)">☰</button>
@@ -645,6 +674,15 @@ async function renderResultsBarChart() {
   const rest = results.slice(3);
   wrap.innerHTML = `
 <div class="results-static-glow" aria-hidden="true"></div>
+    ${emojiConfetti(32)}
+    <div class="side-fireworks light-side-fireworks" aria-hidden="true">
+      <div class="firework left">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="firework right">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
     <section class="results-card premium-results-card">
       <div class="screen-kicker">FINAL RESULTS</div>
       <h1 class="results-title">比赛结果</h1>
