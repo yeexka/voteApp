@@ -1730,7 +1730,7 @@ body.screen-page {
 
 /* Shared clean screen pages */
 .menu-screen,
-.participants-screen,
+/* .participants-screen, */
 .performing-screen,
 .closed-screen-page,
 .results-screen {
@@ -1740,6 +1740,9 @@ body.screen-page {
   display: grid;
   place-items: center;
   position: relative;
+}
+.participants-screen {
+  background: url("assets/bg-without.jpg") center center / cover no-repeat;
 }
 .menu-screen::before,
 .participants-screen::before,
