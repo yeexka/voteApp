@@ -409,12 +409,23 @@ async function startVotingForCurrent() {
   await renderScreen();
 }
 async function closeVoting() {
-  await updateState({
-    phase: "closed",
-    voting_open: false,
-    voting_end_time: new Date().toISOString(),
-    show_ranking: false,
-  });
+  const state = await fetchState();
+  const d = derivePhase(state);
+
+  if (d.phase === "canvassing") {
+    await updateState({
+      phase: "thinking",
+      canvassing_end_time: new Date().toISOString(),
+    });
+  } else {
+    await updateState({
+      phase: "closed",
+      voting_open: false,
+      voting_end_time: new Date().toISOString(),
+      show_ranking: false,
+    });
+  }
+
   await renderScreen();
 }
 function buildQRCode(width = 230) {
@@ -543,7 +554,7 @@ async function renderScreen() {
             <div id="screenPhase" class="voting-phase"></div>
             <p id="screenHint" class="voting-hint"></p>
             <div class="stage-controls voting-control-line">
-              <button class="secondary" onclick="closeVoting()">提前结束投票</button>
+              <button class="secondary" id="earlyCloseBtn" onclick="closeVoting()">提前结束拉票</button>
             </div>
           </section>
           <section class="voting-action">
@@ -563,7 +574,9 @@ async function renderScreen() {
 
     if ((d.phase === "canvassing" || d.phase === "thinking") && group) {
       $("stageKicker").textContent =
-        d.phase === "canvassing" ? "拉票环节" : "最后投票";
+        d.phase === "canvassing"
+          ? "CANVASSING TIME · 拉票环节"
+          : "FINAL VOTING · 最后投票";
       $("screenGroup").textContent = group.name;
       $("screenWork").textContent = `《${group.work}》`;
       const coverSlot = $("votingCoverSlot");
@@ -586,11 +599,15 @@ async function renderScreen() {
         $("screenTimer").textContent = fmt(phaseLeft);
         $("screenHint").textContent = "观众可扫码进入投票，本阶段为拉票时间。";
         label.textContent = "激情拉票中！";
+        const earlyCloseBtn = $("earlyCloseBtn");
+        if (earlyCloseBtn) earlyCloseBtn.textContent = "提前结束拉票";
       } else {
         $("screenPhase").textContent = "现场观众投票倒计时";
         $("screenTimer").textContent = fmt(phaseLeft);
         $("screenHint").textContent = "最后投票中，请现场观众确认分数。";
         label.textContent = "请投我们一票！";
+        const earlyCloseBtn = $("earlyCloseBtn");
+        if (earlyCloseBtn) earlyCloseBtn.textContent = "提前结束投票";
       }
 
       ringWrap.classList.remove("is-active", "is-ending");
@@ -929,7 +946,18 @@ async function renderVote() {
       d.phase === "canvassing" || d.phase === "thinking"
         ? fmt(d.remainingMs)
         : "--:--";
-    $("votePhase").textContent = d.phase;
+    $("votePhase").textContent =
+      d.phase === "canvassing"
+        ? "拉票环节"
+        : d.phase === "thinking"
+          ? "最后投票"
+          : d.phase === "performing"
+            ? "演绎中"
+            : d.phase === "closed"
+              ? "投票已结束"
+              : d.phase === "ranking"
+                ? "结果公布中"
+                : "等待开始";
 
     const miniRing = $("voteRingProgress");
     const totalMs = getPhaseTotalMs(state, d.phase);
@@ -964,8 +992,8 @@ async function renderVote() {
       $("voteControls").style.display = "block";
       const prompt =
         d.phase === "canvassing"
-          ? "拉票环节已开始，投票通道开放。"
-          : "最后投票中，请确认你要给出的分数。";
+          ? "当前为拉票环节，可先完成投票，也可等待最后投票阶段。"
+          : "当前为最后投票阶段，请确认并提交你的分数。";
       setMsg("voteMsg", prompt, "notice");
     }
   } catch (e) {
