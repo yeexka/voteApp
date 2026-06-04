@@ -3193,3 +3193,28 @@ body.screen-page {
   background: rgba(255, 255, 255, 0.14) !important;
   border: 1px solid rgba(255, 255, 255, 0.35) !important;
 }
+/* 最后10秒警示色 */
+.ring-wrap.is-ending .ring-progress {
+  stroke: #ff4d4f !important;
+  filter: drop-shadow(0 0 18px rgba(255, 77, 79, 0.9)) !important;
+}
+
+.ring-wrap.is-ending .ring-time {
+  color: #ffefef !important;
+  text-shadow:
+    0 0 18px rgba(255, 77, 79, 0.9),
+    0 8px 28px rgba(0, 0, 0, 0.35) !important;
+}
+
+.ring-wrap.is-ending {
+  animation: warningPulse 0.65s ease-in-out infinite !important;
+}
+
+@keyframes warningPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.045);
+  }
+}
