@@ -3463,7 +3463,6 @@ body.screen-page {
 .emoji-confetti-layer,
 .paper-confetti,
 .confetti-layer {
-  display: none !important;
   animation: none !important;
 }
 
