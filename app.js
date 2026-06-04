@@ -685,32 +685,211 @@ async function renderResultsBarChart() {
     </section>
     ${hiddenNav()}`;
 }
-// Legacy admin page compatibility.
+// Admin dashboard for emergency control.
 function requireAdmin() {
   return true;
 }
-async function initAdmin() {
-  document.body.innerHTML = `<div class="page"><div class="card"><h1>后台已简化</h1><p class="subtle">现在请从大屏首页右下角隐藏导航进入“比赛入口”。小组信息已写入系统，不需要在后台添加。</p><a href="index.html"><button>打开大屏首页</button></a></div></div>`;
+
+function adminShell() {
+  return `<div class="admin-page">
+    <section class="admin-card">
+      <div class="admin-header">
+        <div>
+          <h1>比赛投票后台</h1>
+          <p>用于查看每组投票人数、总分、均分，以及清空某组票数重新投票。</p>
+        </div>
+        <div class="admin-actions">
+          <button onclick="renderAdmin()">刷新数据</button>
+          <button class="secondary" onclick="goHome()">大屏回首页</button>
+        </div>
+      </div>
+
+      <div id="adminStatus" class="admin-status">正在加载数据...</div>
+
+      <h2>各组投票统计</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>序号</th>
+              <th>小组</th>
+              <th>作品</th>
+              <th>投票人数</th>
+              <th>总分</th>
+              <th>均分</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="adminStatsBody"></tbody>
+        </table>
+      </div>
+
+      <h2>应急清票与重新投票</h2>
+      <div class="admin-reset-panel">
+        <label for="adminGroupSelect">选择小组</label>
+        <select id="adminGroupSelect">
+          ${COMPETITION_GROUPS.map((g) => `<option value="${g.id}">${esc(g.name)}《${esc(g.work)}》</option>`).join("")}
+        </select>
+
+        <div class="admin-reset-buttons">
+          <button class="danger" onclick="clearSelectedGroupVotes()">只清空该组票数</button>
+          <button onclick="restartSelectedGroupVoting()">清空并重新开放投票</button>
+        </div>
+
+        <p class="admin-note">
+          说明：清空某组票数后，之前同一设备“只能投一次”的记录会被删除，该组可以重新扫码投票。
+        </p>
+      </div>
+    </section>
+  </div>`;
 }
-async function renderAdmin() {}
-async function renderAdminStatusOnly() {}
+
+async function initAdmin() {
+  document.body.innerHTML = adminShell();
+  await renderAdmin();
+}
+
+async function renderAdmin() {
+  const body = $("adminStatsBody");
+  const status = $("adminStatus");
+  if (!body || !status) return;
+
+  try {
+    status.textContent = "正在读取投票数据...";
+    const votes = await fetchVotes();
+
+    const rows = COMPETITION_GROUPS.map((g) => {
+      const gv = votes.filter((v) => Number(v.group_id) === Number(g.id));
+      const voteCount = gv.length;
+      const totalScore = gv.reduce((sum, v) => sum + Number(v.score || 0), 0);
+      const avgScore = voteCount ? totalScore / voteCount : 0;
+      return {
+        ...g,
+        voteCount,
+        totalScore,
+        avgScore,
+      };
+    });
+
+    body.innerHTML = rows
+      .map(
+        (r, index) => `<tr>
+          <td>${index + 1}</td>
+          <td><strong>${esc(r.name)}</strong></td>
+          <td>《${esc(r.work)}》</td>
+          <td>${r.voteCount}</td>
+          <td>${r.totalScore}</td>
+          <td>${r.voteCount ? r.avgScore.toFixed(2) : "-"}</td>
+          <td class="admin-op-cell">
+            <button class="small danger" onclick="clearGroupVotes(${r.id})">清空票数</button>
+            <button class="small" onclick="restartGroupVoting(${r.id})">重新开放投票</button>
+          </td>
+        </tr>`,
+      )
+      .join("");
+
+    const totalVotes = votes.length;
+    status.textContent = `当前总投票记录：${totalVotes} 条。`;
+  } catch (e) {
+    status.textContent = `读取失败：${e.message}`;
+  }
+}
+
+async function renderAdminStatusOnly() {
+  await renderAdmin();
+}
+
+async function clearGroupVotes(groupId) {
+  const group = getGroupById(groupId);
+  const ok = confirm(`确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`);
+  if (!ok) return;
+
+  const { error } = await getClient()
+    .from("votes")
+    .delete()
+    .eq("group_id", Number(groupId));
+
+  if (error) {
+    alert(`清空失败：${error.message}`);
+    return;
+  }
+
+  alert(`已清空「${group ? group.name : groupId}」的投票记录。`);
+  await renderAdmin();
+}
+
+async function restartGroupVoting(groupId) {
+  const group = getGroupById(groupId);
+  const ok = confirm(`确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`);
+  if (!ok) return;
+
+  const { error } = await getClient()
+    .from("votes")
+    .delete()
+    .eq("group_id", Number(groupId));
+
+  if (error) {
+    alert(`清空失败：${error.message}`);
+    return;
+  }
+
+  const canvassing = Number(cfg.CANVASSING_SECONDS || 60);
+  const thinking = Number(cfg.THINKING_SECONDS || 60);
+
+  await updateState({
+    current_group_id: Number(groupId),
+    phase: "canvassing",
+    voting_open: true,
+    voting_start_time: new Date().toISOString(),
+    canvassing_end_time: isoAfter(canvassing),
+    voting_end_time: isoAfter(canvassing + thinking),
+    show_ranking: false,
+  });
+
+  alert(`已清空「${group ? group.name : groupId}」票数，并重新开放投票。`);
+  await renderAdmin();
+}
+
+async function clearSelectedGroupVotes() {
+  const select = $("adminGroupSelect");
+  if (!select) return;
+  await clearGroupVotes(Number(select.value));
+}
+
+async function restartSelectedGroupVoting() {
+  const select = $("adminGroupSelect");
+  if (!select) return;
+  await restartGroupVoting(Number(select.value));
+}
+
 async function saveGroup() {}
+
 async function startVoting() {
   await startVotingForCurrent();
 }
+
 async function showPerformance() {}
+
 async function resetCurrentGroup() {
   const state = await fetchState();
   if (!state.current_group_id) return;
-  await getClient()
-    .from("votes")
-    .delete()
-    .eq("group_id", state.current_group_id);
+  await clearGroupVotes(Number(state.current_group_id));
 }
+
 async function resetAll() {
-  await getClient().from("votes").delete().neq("id", 0);
+  const ok = confirm("确定清空所有小组的投票记录，并让大屏回到首页吗？");
+  if (!ok) return;
+
+  const { error } = await getClient().from("votes").delete().neq("id", 0);
+  if (error) {
+    alert(`清空失败：${error.message}`);
+    return;
+  }
+
   await goHome();
+  await renderAdmin();
 }
+
 
 async function initVote() {
   ensureToken();
