@@ -578,7 +578,9 @@ async function renderScreen() {
 
     if ((d.phase === "canvassing" || d.phase === "thinking") && group) {
       $("stageKicker").textContent =
-        d.phase === "canvassing" ? "拉票环节" : "最后投票";
+        d.phase === "canvassing"
+          ? "CANVASSING TIME · 拉票环节"
+          : "FINAL VOTING · 最后投票";
       $("screenGroup").textContent = group.name;
       $("screenWork").textContent = `《${group.work}》`;
       const coverSlot = $("votingCoverSlot");
@@ -652,6 +654,7 @@ async function renderResultsBarChart() {
   </div>
 </div>
     <section class="results-card premium-results-card">
+      <div class="screen-kicker">FINAL RESULTS</div>
       <h1 class="results-title">比赛结果</h1>
 
       <div class="podium-wrap">
@@ -758,6 +761,33 @@ function adminShell() {
           说明：清空某组票数后，之前同一设备“只能投一次”的记录会被删除，该组可以重新扫码投票。
         </p>
       </div>
+
+      <h2>应急设置某组成绩</h2>
+      <div class="admin-reset-panel emergency-score-panel">
+        <label for="emergencyGroupSelect">选择小组</label>
+        <select id="emergencyGroupSelect">
+          ${COMPETITION_GROUPS.map((g) => `<option value="${g.id}">${esc(g.name)}《${esc(g.work)}》</option>`).join("")}
+        </select>
+
+        <div class="manual-score-grid">
+          <label>
+            投票人数
+            <input id="emergencyVoteCount" type="number" min="1" step="1" placeholder="例如 80">
+          </label>
+          <label>
+            目标均分
+            <input id="emergencyAverageScore" type="number" min="1" max="10" step="0.01" placeholder="例如 8.75">
+          </label>
+        </div>
+
+        <div class="admin-reset-buttons">
+          <button class="danger" onclick="applyEmergencyScore()">清空该组并写入这个成绩</button>
+        </div>
+
+        <p class="admin-note">
+          说明：这个功能会先清空该组原有投票，再自动生成一批应急投票记录，所以结果页仍然按 votes 表正常计算。
+        </p>
+      </div>
     </section>
   </div>`;
 }
@@ -801,6 +831,7 @@ async function renderAdmin() {
           <td class="admin-op-cell">
             <button class="small danger" onclick="clearGroupVotes(${r.id})">清空票数</button>
             <button class="small" onclick="restartGroupVoting(${r.id})">重新开放投票</button>
+            <button class="small secondary" onclick="fillEmergencyScoreForm(${r.id}, ${r.voteCount}, ${r.avgScore || 0})">设应急成绩</button>
           </td>
         </tr>`,
       )
@@ -819,9 +850,7 @@ async function renderAdminStatusOnly() {
 
 async function clearGroupVotes(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(
-    `确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`,
-  );
+  const ok = confirm(`确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`);
   if (!ok) return;
 
   const { error } = await getClient()
@@ -840,9 +869,7 @@ async function clearGroupVotes(groupId) {
 
 async function restartGroupVoting(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(
-    `确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`,
-  );
+  const ok = confirm(`确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`);
   if (!ok) return;
 
   const { error } = await getClient()
@@ -884,6 +911,115 @@ async function restartSelectedGroupVoting() {
   await restartGroupVoting(Number(select.value));
 }
 
+function fillEmergencyScoreForm(groupId, voteCount = 1, avgScore = 8) {
+  const groupSelect = $("emergencyGroupSelect");
+  const countInput = $("emergencyVoteCount");
+  const avgInput = $("emergencyAverageScore");
+
+  if (groupSelect) groupSelect.value = String(groupId);
+  if (countInput) countInput.value = voteCount && voteCount > 0 ? voteCount : 1;
+  if (avgInput) avgInput.value = avgScore && avgScore > 0 ? Number(avgScore).toFixed(2) : "";
+
+  const panel = document.querySelector(".emergency-score-panel");
+  if (panel) panel.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function buildEmergencyScores(voteCount, targetAverage) {
+  const count = Math.max(1, Number(voteCount));
+  const avg = Math.max(1, Math.min(10, Number(targetAverage)));
+  const targetTotal = Math.round(count * avg);
+
+  let base = Math.floor(targetTotal / count);
+  let remainder = targetTotal - base * count;
+
+  base = Math.max(1, Math.min(10, base));
+
+  const scores = Array.from({ length: count }, () => base);
+
+  for (let i = 0; i < scores.length && remainder > 0; i += 1) {
+    const add = Math.min(10 - scores[i], remainder);
+    scores[i] += add;
+    remainder -= add;
+  }
+
+  for (let i = 0; i < scores.length && remainder < 0; i += 1) {
+    const minus = Math.min(scores[i] - 1, Math.abs(remainder));
+    scores[i] -= minus;
+    remainder += minus;
+  }
+
+  return scores;
+}
+
+async function applyEmergencyScore() {
+  const groupId = Number($("emergencyGroupSelect")?.value);
+  const voteCount = Number($("emergencyVoteCount")?.value);
+  const targetAverage = Number($("emergencyAverageScore")?.value);
+  const group = getGroupById(groupId);
+
+  if (!groupId) {
+    alert("请先选择小组。");
+    return;
+  }
+
+  if (!Number.isInteger(voteCount) || voteCount < 1) {
+    alert("投票人数必须是大于 0 的整数。");
+    return;
+  }
+
+  if (!Number.isFinite(targetAverage) || targetAverage < 1 || targetAverage > 10) {
+    alert("目标均分必须在 1 到 10 之间。");
+    return;
+  }
+
+  const scores = buildEmergencyScores(voteCount, targetAverage);
+  const realTotal = scores.reduce((sum, score) => sum + score, 0);
+  const realAverage = realTotal / scores.length;
+
+  const ok = confirm(
+    `确定清空「${group ? group.name : groupId}」原有投票，并写入应急成绩吗？\n\n` +
+    `投票人数：${scores.length}\n` +
+    `总分：${realTotal}\n` +
+    `实际均分：${realAverage.toFixed(2)}\n\n` +
+    `注意：因为 votes 表单个分数只能是 1 到 10 的整数，系统会自动生成最接近目标均分的投票记录。`
+  );
+
+  if (!ok) return;
+
+  const deleteResult = await getClient()
+    .from("votes")
+    .delete()
+    .eq("group_id", groupId);
+
+  if (deleteResult.error) {
+    alert(`清空失败：${deleteResult.error.message}`);
+    return;
+  }
+
+  const stamp = Date.now();
+  const rows = scores.map((score, index) => ({
+    group_id: groupId,
+    voter_token: `emergency-${groupId}-${stamp}-${index}`,
+    score,
+  }));
+
+  const insertResult = await getClient().from("votes").insert(rows);
+
+  if (insertResult.error) {
+    alert(`写入应急成绩失败：${insertResult.error.message}`);
+    return;
+  }
+
+  alert(
+    `已写入「${group ? group.name : groupId}」应急成绩。\n\n` +
+    `投票人数：${scores.length}\n` +
+    `总分：${realTotal}\n` +
+    `均分：${realAverage.toFixed(2)}`
+  );
+
+  await renderAdmin();
+}
+
 async function saveGroup() {}
 
 async function startVoting() {
@@ -911,6 +1047,7 @@ async function resetAll() {
   await goHome();
   await renderAdmin();
 }
+
 
 async function initVote() {
   ensureToken();
@@ -979,7 +1116,7 @@ async function renderVote() {
       if (d.phase === "performing")
         msg = `${group ? group.name : "当前小组"}正在演绎中，请稍后投票。`;
       if (d.phase === "closed")
-        msg = `${group ? group.name : "该组"}投票已结束。等待下一组演绎`;
+        msg = `${group ? group.name : "该组"}投票已结束。`;
       if (d.phase === "ranking") msg = "比赛结果公布中。";
       setMsg("voteMsg", msg, "notice");
       return;
@@ -996,7 +1133,7 @@ async function renderVote() {
       $("voteControls").style.display = "block";
       const prompt =
         d.phase === "canvassing"
-          ? "当前为拉票环节，可进行投票，也可等待拉票环节后进行。请注意一人一组仅能投出一票"
+          ? "当前为拉票环节，可先完成投票，也可等待最后投票阶段。"
           : "当前为最后投票阶段，请确认并提交你的分数。";
       setMsg("voteMsg", prompt, "notice");
     }

@@ -3365,3 +3365,29 @@ body.screen-page {
   padding: 7px 12px;
   font-size: 14px;
 }
+
+.manual-score-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 260px));
+  gap: 16px;
+  margin: 12px 0 18px;
+}
+
+.manual-score-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 900;
+}
+
+.manual-score-grid input {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: none;
+  font-size: 18px;
+  color: #005141;
+}
+
+.emergency-score-panel {
+  border-color: rgba(255, 232, 142, 0.42);
+}
