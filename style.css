@@ -2542,7 +2542,7 @@ body.screen-page {
 }
 .participants-wall .participants-title {
   margin: clamp(18px, 2vw, 34px) 0 clamp(18px, 2vw, 30px);
-  font-size: clamp(58px, 6.8vw, 116px);
+  font-size: clamp(42px, 6.8vw, 116px);
   line-height: 1;
   color: #fff;
   letter-spacing: 0.02em;
@@ -2646,7 +2646,7 @@ body.screen-page {
   }
   .participants-wall .participants-title {
     font-family: "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
-    font-size: clamp(36px, 10vw, 78px);
+    /* font-size: clamp(36px, 10vw, 78px); */
   }
 }
 /* 参赛名单：防止四个字姓名换行 */
@@ -2665,5 +2665,5 @@ body.screen-page {
 /* 参赛名单标题位置调整 */
 
 .participants-wall {
-  transform: translateY(-45px) !important;
+  transform: translateY(-50px) !important;
 }
