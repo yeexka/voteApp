@@ -1,6 +1,171 @@
 const cfg = window.APP_CONFIG || {};
 let supabaseClient = null;
 let screenLayoutKey = null;
+let selectedScore = null;
+
+const COMPETITION_GROUPS = [
+  {
+    "id": 1,
+    "name": "低调组",
+    "work": "小猪佩奇",
+    "members": [
+      "李峻宇",
+      "法舜哲",
+      "刘瑜董泽",
+      "邱傲然"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "企鹅组",
+    "work": "马达加斯加的企鹅1",
+    "members": [
+      "朱海滨",
+      "王鸿飞",
+      "殷子尧",
+      "吴硕宸"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "宠物王",
+    "work": "爱宠大机密",
+    "members": [
+      "王若璇",
+      "王薇茗",
+      "贾璀琦"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "探案组",
+    "work": "疯狂动物城",
+    "members": [
+      "温子豪",
+      "袁睿",
+      "王雪瑜"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "天煞队",
+    "work": "功夫熊猫3",
+    "members": [
+      "张峻瑜",
+      "郗梓淳",
+      "蒋家增"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "随便队",
+    "work": "神偷奶爸",
+    "members": [
+      "王梓安",
+      "张迎栋",
+      "周雨馨",
+      "刘小童"
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Team Spirit",
+    "work": "狮子王",
+    "members": [
+      "金旻志",
+      "王铭洋",
+      "颜鑫宇",
+      "张晶贻"
+    ]
+  },
+  {
+    "id": 8,
+    "name": "蔚蓝队",
+    "work": "阿甘正传",
+    "members": [
+      "王文煊",
+      "Sami"
+    ]
+  },
+  {
+    "id": 9,
+    "name": "无人队",
+    "work": "奇幻森林",
+    "members": [
+      "闫梓翔",
+      "娄家辉"
+    ]
+  }
+];
+const PARTICIPANTS = [
+  "邱傲然",
+  "张晶始",
+  "金旻志",
+  "王梓安",
+  "王文煊",
+  "吴硕宸",
+  "袁睿",
+  "郭子琪",
+  "王铭洋",
+  "王薇茗",
+  "王鸿飞",
+  "李峻宇",
+  "朱海滨",
+  "刘小童",
+  "闫梓翔",
+  "张迎栋",
+  "崔婧涵",
+  "郗梓淳",
+  "温子豪",
+  "蒋家增",
+  "王雪瑜",
+  "李泳仪",
+  "周雨馨",
+  "颜鑫雨",
+  "李冰璇",
+  "夏雪",
+  "张峻瑜",
+  "刘谕董泽",
+  "娄家辉",
+  "许皓然",
+  "凡姝菡",
+  "魏子芮",
+  "王若璇",
+  "宋澜",
+  "张肖铨",
+  "张俪莹",
+  "冯彰美佳",
+  "丁梓萱",
+  "赵佑泽",
+  "贾晓璐",
+  "殷子尧",
+  "彭宇轩",
+  "孙畅",
+  "王晨锦",
+  "贾璀琦",
+  "法舜哲",
+  "盛俊",
+  "梁佳琳",
+  "李明昊",
+  "李雨臻",
+  "褚志贤",
+  "张赵涵",
+  "易千舜",
+  "王宁",
+  "刘芯源",
+  "刘懿杭",
+  "杨晨嘉",
+  "张昱宬",
+  "袁书怡",
+  "满晓凡",
+  "杨景皓",
+  "赵笠言",
+  "韩镇泽",
+  "吴钒",
+  "宋延昊",
+  "宋述辉",
+  "任师域"
+];
 
 function getClient() {
   if (!supabaseClient) {
@@ -15,16 +180,27 @@ function getClient() {
 function $(id) { return document.getElementById(id); }
 function nowMs() { return Date.now(); }
 function isoAfter(seconds) { return new Date(Date.now() + seconds * 1000).toISOString(); }
-function safeName(g) { return g && g.name && g.name.trim() ? g.name.trim() : `Group ${g ? g.id : ''}`; }
-function safeWork(g) { return g && g.work_title && g.work_title.trim() ? g.work_title.trim() : '作品待定'; }
-function safeMembers(g) { return g && g.members && g.members.trim() ? g.members.trim() : '参赛人待定'; }
-function escAttr(v) { return String(v || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function esc(v) { return String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function safeName(g) { return g && g.name ? g.name : `Group ${g ? g.id : ''}`; }
+function safeWork(g) { return g && g.work ? g.work : (g && g.work_title ? g.work_title : '作品待定'); }
+function safeMembers(g) {
+  if (!g) return '参赛人待定';
+  if (Array.isArray(g.members)) return g.members.join('、');
+  return g.members || '参赛人待定';
+}
 function fmt(ms) {
   const s = Math.max(0, Math.ceil(ms / 1000));
   const m = Math.floor(s / 60);
   const r = s % 60;
   return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
 }
+function getVoteUrl() {
+  const base = cfg.PUBLIC_BASE_URL && cfg.PUBLIC_BASE_URL.trim()
+    ? cfg.PUBLIC_BASE_URL.trim().replace(/\/$/, '')
+    : window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+  return `${base}/vote.html`;
+}
+function getGroupById(id) { return COMPETITION_GROUPS.find(g => g.id === Number(id)); }
 
 function setRingProgress(el, remainingMs, totalMs, circumference) {
   if (!el) return;
@@ -45,41 +221,10 @@ function getPhaseTotalMs(state, phase) {
   }
   return canvassing + thinking;
 }
-function getVoteUrl() {
-  const base = cfg.PUBLIC_BASE_URL && cfg.PUBLIC_BASE_URL.trim()
-    ? cfg.PUBLIC_BASE_URL.trim().replace(/\/$/, '')
-    : window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
-  return `${base}/vote.html`;
-}
-async function fetchGroups() {
-  const { data, error } = await getClient().from('groups').select('*').order('id');
-  if (error) throw error;
-  return data || [];
-}
-async function fetchState() {
-  const { data, error } = await getClient().from('event_state').select('*').eq('id', 1).single();
-  if (error) throw error;
-  return data;
-}
-async function fetchVotesForGroup(groupId) {
-  const { data, error } = await getClient().from('votes').select('*').eq('group_id', groupId);
-  if (error) throw error;
-  return data || [];
-}
-async function fetchResults() {
-  const groups = await fetchGroups();
-  const { data: votes, error } = await getClient().from('votes').select('*');
-  if (error) throw error;
-  return groups.map(g => {
-    const gv = (votes || []).filter(v => v.group_id === g.id);
-    const total = gv.reduce((sum, v) => sum + Number(v.score || 0), 0);
-    const avg = gv.length ? total / gv.length : 0;
-    return { ...g, vote_count: gv.length, average_score: avg };
-  }).sort((a, b) => b.average_score - a.average_score || b.vote_count - a.vote_count || a.id - b.id);
-}
 function derivePhase(state) {
   if (!state) return { phase: 'idle', remainingMs: 0 };
   if (state.show_ranking || state.phase === 'ranking') return { phase: 'ranking', remainingMs: 0 };
+  if (state.phase === 'menu' || state.phase === 'participants' || state.phase === 'performing') return { phase: state.phase, remainingMs: 0 };
   if (!state.voting_open || !state.voting_end_time) return { phase: state.phase || 'idle', remainingMs: 0 };
   const t = nowMs();
   const canvassEnd = new Date(state.canvassing_end_time).getTime();
@@ -87,6 +232,36 @@ function derivePhase(state) {
   if (t >= voteEnd) return { phase: 'closed', remainingMs: 0 };
   if (t < canvassEnd) return { phase: 'canvassing', remainingMs: voteEnd - t, phaseRemainingMs: canvassEnd - t };
   return { phase: 'thinking', remainingMs: voteEnd - t, phaseRemainingMs: voteEnd - t };
+}
+
+async function fetchState() {
+  const { data, error } = await getClient().from('event_state').select('*').eq('id', 1).single();
+  if (error) throw error;
+  return data;
+}
+async function updateState(patch) {
+  const { error } = await getClient().from('event_state').update({ ...patch, updated_at: new Date().toISOString() }).eq('id', 1);
+  if (error) throw error;
+}
+async function fetchVotes() {
+  const { data, error } = await getClient().from('votes').select('*');
+  if (error) throw error;
+  return data || [];
+}
+async function hasVoted(groupId) {
+  const token = ensureToken();
+  const { data, error } = await getClient().from('votes').select('score').eq('group_id', groupId).eq('voter_token', token).maybeSingle();
+  if (error) throw error;
+  return data;
+}
+async function fetchResults() {
+  const votes = await fetchVotes();
+  return COMPETITION_GROUPS.map(g => {
+    const gv = votes.filter(v => Number(v.group_id) === Number(g.id));
+    const total = gv.reduce((sum, v) => sum + Number(v.score || 0), 0);
+    const avg = gv.length ? total / gv.length : 0;
+    return { ...g, vote_count: gv.length, average_score: avg };
+  }).sort((a, b) => b.average_score - a.average_score || b.vote_count - a.vote_count || a.id - b.id);
 }
 function ensureToken() {
   let token = localStorage.getItem('dubbing_voter_token');
@@ -103,189 +278,71 @@ function setMsg(id, text, type='notice') {
   el.textContent = text;
   el.style.display = text ? 'block' : 'none';
 }
-function requireAdmin() {
-  const saved = sessionStorage.getItem('admin_ok') === '1';
-  if (saved) return true;
-  const code = prompt('请输入后台密码 / Admin code');
-  if (code === cfg.ADMIN_CODE) {
-    sessionStorage.setItem('admin_ok', '1');
-    return true;
-  }
-  document.body.innerHTML = '<div class="page"><div class="card"><h1>后台密码错误</h1><p class="subtle">刷新页面后可重新输入。人类连密码都能输错，真是稳定发挥。</p></div></div>';
-  return false;
-}
-async function initAdmin() {
-  if (!requireAdmin()) return;
-  await renderAdmin();
-  setInterval(renderAdminStatusOnly, 1000);
-}
-async function renderAdmin() {
-  try {
-    const groups = await fetchGroups();
-    const state = await fetchState();
-    const list = $('groupList');
-    const select = $('currentGroup');
-    list.innerHTML = '';
-    select.innerHTML = '';
-    groups.forEach(g => {
-      const row = document.createElement('div');
-      row.className = 'group-editor';
-      row.innerHTML = `
-        <div class="group-no">#${g.id}</div>
-        <input id="gname-${g.id}" value="${escAttr(g.name)}" placeholder="小组名 / Group ${g.id}">
-        <input id="gwork-${g.id}" value="${escAttr(g.work_title)}" placeholder="作品名 / Work title">
-        <input id="gmembers-${g.id}" value="${escAttr(g.members)}" placeholder="参赛人 / Members">
-        <button onclick="saveGroup(${g.id})">Save</button>`;
-      list.appendChild(row);
-      const opt = document.createElement('option');
-      opt.value = g.id;
-      opt.textContent = safeName(g);
-      if (state.current_group_id === g.id) opt.selected = true;
-      select.appendChild(opt);
-    });
-    await renderAdminStatusOnly();
-  } catch (e) { setMsg('adminMsg', e.message, 'error'); }
-}
-async function renderAdminStatusOnly() {
-  try {
-    const [state, groups] = await Promise.all([fetchState(), fetchGroups()]);
-    const group = groups.find(g => g.id === state.current_group_id);
-    const d = derivePhase(state);
-    const votes = state.current_group_id ? await fetchVotesForGroup(state.current_group_id) : [];
-    $('adminCurrent').textContent = group ? safeName(group) : 'No group selected';
-    $('adminPhase').textContent = d.phase;
-    $('adminTimer').textContent = d.phase === 'idle' || d.phase === 'closed' || d.phase === 'ranking' ? '--:--' : fmt(d.remainingMs);
-    $('adminVotes').textContent = votes.length;
-  } catch (e) { /* keep page calm, unlike most build logs */ }
-}
-async function saveGroup(id) {
-  try {
-    const name = $(`gname-${id}`).value.trim();
-    const work_title = $(`gwork-${id}`).value.trim();
-    const members = $(`gmembers-${id}`).value.trim();
-    const { error } = await getClient().from('groups').update({ name, work_title, members }).eq('id', id);
-    if (error) throw error;
-    setMsg('adminMsg', 'Group info saved.', 'success');
-    await renderAdmin();
-  } catch (e) { setMsg('adminMsg', e.message, 'error'); }
-}
 
-async function showPerformance() {
-  try {
-    const groupId = Number($('currentGroup').value);
-    const { error } = await getClient().from('event_state').update({
-      current_group_id: groupId,
-      phase: 'performing',
-      voting_open: false,
-      voting_start_time: null,
-      canvassing_end_time: null,
-      voting_end_time: null,
-      show_ranking: false,
-      updated_at: new Date().toISOString()
-    }).eq('id', 1);
-    if (error) throw error;
-    setMsg('adminMsg', 'Performance screen shown.', 'success');
-    await renderAdminStatusOnly();
-  } catch (e) { setMsg('adminMsg', e.message, 'error'); }
-}
-async function startVoting() {
-  try {
-    const groupId = Number($('currentGroup').value);
-    const canvassing = Number(cfg.CANVASSING_SECONDS || 60);
-    const thinking = Number(cfg.THINKING_SECONDS || 60);
-    const start = new Date().toISOString();
-    const { error } = await getClient().from('event_state').update({
-      current_group_id: groupId,
-      phase: 'canvassing',
-      voting_open: true,
-      voting_start_time: start,
-      canvassing_end_time: isoAfter(canvassing),
-      voting_end_time: isoAfter(canvassing + thinking),
-      show_ranking: false,
-      updated_at: new Date().toISOString()
-    }).eq('id', 1);
-    if (error) throw error;
-    setMsg('adminMsg', 'Voting started.', 'success');
-    await renderAdminStatusOnly();
-  } catch (e) { setMsg('adminMsg', e.message, 'error'); }
-}
-async function closeVoting() {
-  try {
-    const { error } = await getClient().from('event_state').update({
-      phase: 'closed', voting_open: false, voting_end_time: new Date().toISOString(), show_ranking: false, updated_at: new Date().toISOString()
-    }).eq('id', 1);
-    if (error) throw error;
-    setMsg('adminMsg', 'Voting closed.', 'success');
-    await renderAdminStatusOnly();
-  } catch (e) { setMsg('adminMsg', e.message, 'error'); }
-}
-async function showRanking() {
-  try {
-    const { error } = await getClient().from('event_state').update({ phase: 'ranking', voting_open: false, show_ranking: true, updated_at: new Date().toISOString() }).eq('id', 1);
-    if (error) throw error;
-    setMsg('adminMsg', 'Ranking is now shown on screen.', 'success');
-  } catch (e) { setMsg('adminMsg', e.message, 'error'); }
-}
-async function backIdle() {
-  try {
-    const { error } = await getClient().from('event_state').update({ current_group_id: null, phase: 'idle', voting_open: false, show_ranking: false, updated_at: new Date().toISOString() }).eq('id', 1);
-    if (error) throw error;
-    setMsg('adminMsg', 'Screen back to idle.', 'success');
-  } catch (e) { setMsg('adminMsg', e.message, 'error'); }
-}
-async function resetCurrentGroup() {
-  if (!confirm('Reset current group votes?')) return;
-  try {
-    const state = await fetchState();
-    if (!state.current_group_id) throw new Error('No current group selected.');
-    const { error } = await getClient().from('votes').delete().eq('group_id', state.current_group_id);
-    if (error) throw error;
-    setMsg('adminMsg', 'Current group votes reset.', 'success');
-    await renderAdminStatusOnly();
-  } catch (e) { setMsg('adminMsg', e.message, 'error'); }
-}
-async function resetAll() {
-  if (!confirm('Reset ALL votes and state? This cannot be undone.')) return;
-  try {
-    let r = await getClient().from('votes').delete().neq('id', 0);
-    if (r.error) throw r.error;
-    r = await getClient().from('event_state').update({ current_group_id: null, phase: 'idle', voting_open: false, voting_start_time: null, canvassing_end_time: null, voting_end_time: null, show_ranking: false, updated_at: new Date().toISOString() }).eq('id', 1);
-    if (r.error) throw r.error;
-    setMsg('adminMsg', 'All data reset.', 'success');
-    await renderAdmin();
-  } catch (e) { setMsg('adminMsg', e.message, 'error'); }
-}
-async function initScreen() {
-  await renderScreen();
-  setInterval(renderScreen, 1000);
-}
-function emergencyDock() {
+function hiddenNav() {
   return `<nav class="hidden-nav" aria-label="Hidden navigation">
     <button class="hidden-nav-toggle" type="button" onclick="toggleHiddenNav(event)">☰</button>
     <div class="hidden-nav-panel">
-      <a href="index.html">大屏首页</a>
-      <a href="admin.html" target="_blank">后台控制</a>
-      <a href="vote.html" target="_blank">投票入口</a>
+      <button type="button" onclick="goHome()">大屏首页</button>
+      <button type="button" onclick="showCompetitionMenu()">比赛入口</button>
+      <button type="button" onclick="showParticipants()">参赛名单</button>
+      <button type="button" onclick="showResults()">比赛结果</button>
       <button type="button" onclick="location.reload()">刷新同步</button>
       <button type="button" onclick="toggleFullscreen()">全屏显示</button>
     </div>
   </nav>`;
 }
-
 function toggleHiddenNav(event) {
   event.stopPropagation();
   const nav = event.currentTarget.closest('.hidden-nav');
   if (nav) nav.classList.toggle('open');
 }
-
 function toggleFullscreen() {
   const doc = document;
   const el = document.documentElement;
-  if (!doc.fullscreenElement && el.requestFullscreen) {
-    el.requestFullscreen();
-  } else if (doc.exitFullscreen) {
-    doc.exitFullscreen();
-  }
+  if (!doc.fullscreenElement && el.requestFullscreen) el.requestFullscreen();
+  else if (doc.exitFullscreen) doc.exitFullscreen();
+}
+async function goHome() {
+  await updateState({ current_group_id: null, phase: 'idle', voting_open: false, show_ranking: false, voting_start_time: null, canvassing_end_time: null, voting_end_time: null });
+  await renderScreen();
+}
+async function showCompetitionMenu() {
+  await updateState({ current_group_id: null, phase: 'menu', voting_open: false, show_ranking: false, voting_start_time: null, canvassing_end_time: null, voting_end_time: null });
+  await renderScreen();
+}
+async function showParticipants() {
+  await updateState({ phase: 'participants', voting_open: false, show_ranking: false });
+  await renderScreen();
+}
+async function showResults() {
+  await updateState({ phase: 'ranking', voting_open: false, show_ranking: true });
+  await renderScreen();
+}
+async function selectCompetitionGroup(id) {
+  await updateState({ current_group_id: id, phase: 'performing', voting_open: false, show_ranking: false, voting_start_time: null, canvassing_end_time: null, voting_end_time: null });
+  await renderScreen();
+}
+async function startVotingForCurrent() {
+  const state = await fetchState();
+  const groupId = Number(state.current_group_id);
+  if (!groupId) throw new Error('No group selected.');
+  const canvassing = Number(cfg.CANVASSING_SECONDS || 60);
+  const thinking = Number(cfg.THINKING_SECONDS || 60);
+  await updateState({
+    current_group_id: groupId,
+    phase: 'canvassing',
+    voting_open: true,
+    voting_start_time: new Date().toISOString(),
+    canvassing_end_time: isoAfter(canvassing),
+    voting_end_time: isoAfter(canvassing + thinking),
+    show_ranking: false
+  });
+  await renderScreen();
+}
+async function closeVoting() {
+  await updateState({ phase: 'closed', voting_open: false, voting_end_time: new Date().toISOString(), show_ranking: false });
+  await renderScreen();
 }
 function buildQRCode(width = 230) {
   const box = $('qrcode');
@@ -296,12 +353,17 @@ function buildQRCode(width = 230) {
   if (url) url.textContent = getVoteUrl();
 }
 
+async function initScreen() {
+  await renderScreen();
+  setInterval(renderScreen, 1000);
+}
+
 async function renderScreen() {
   try {
-    const [state, groups] = await Promise.all([fetchState(), fetchGroups()]);
+    const state = await fetchState();
     const d = derivePhase(state);
-    const group = groups.find(g => g.id === state.current_group_id);
-    if (d.phase === 'ranking') return renderRanking();
+    const group = getGroupById(state.current_group_id);
+    if (d.phase === 'ranking') return renderResultsBarChart();
 
     const wrap = $('screenMain');
     const layoutKey = `${d.phase}-${state.current_group_id || 'none'}`;
@@ -312,39 +374,78 @@ async function renderScreen() {
       wrap.dataset.ready = '1';
       wrap.innerHTML = '';
 
-      if (d.phase === 'idle' || !group) {
+      if (d.phase === 'idle') {
         wrap.className = 'bigscreen-shell home-only-screen';
-        wrap.innerHTML = `
-          <section class="waiting-screen ums-welcome" aria-label="Competition homepage"></section>
-          ${emergencyDock()}`;
+        wrap.innerHTML = `<section class="waiting-screen ums-welcome" aria-label="Competition homepage"></section>${hiddenNav()}`;
         return;
       }
 
-      if (d.phase === 'performing') {
-        wrap.className = 'bigscreen-shell';
+      if (d.phase === 'menu') {
+        wrap.className = 'menu-screen';
         wrap.innerHTML = `
-          <section class="perform-screen">
-            <div class="perform-kicker">NOW PERFORMING / 正在演绎</div>
-            <h1 class="perform-group" id="perfGroup"></h1>
-            <div class="perform-info">
-              <div class="perform-item"><span>作品</span><b id="perfWork"></b></div>
-              <div class="perform-item"><span>参赛人</span><b id="perfMembers"></b></div>
+          <section class="menu-card">
+            <div class="screen-kicker">COMPETITION ENTRY</div>
+            <h1 class="menu-title">比赛入口</h1>
+            <p class="menu-subtitle">请选择即将演绎的小组</p>
+            <div class="group-button-grid">
+              ${COMPETITION_GROUPS.map(g => `<button class="group-entry-btn" onclick="selectCompetitionGroup(${g.id})"><b>${esc(g.name)}</b><span>《${esc(g.work)}》</span></button>`).join('')}
             </div>
-            <div class="perform-badge">演绎中</div>
-            <p class="perform-note">请欣赏本组现场配音表演，演绎结束后将开放现场投票。</p>
           </section>
-          ${emergencyDock()}`;
-      } else if (d.phase === 'closed') {
-        wrap.className = 'bigscreen-shell';
+          ${hiddenNav()}`;
+        return;
+      }
+
+      if (d.phase === 'participants') {
+        wrap.className = 'participants-screen';
         wrap.innerHTML = `
-          <section class="closed-screen">
-            <div class="waiting-kicker">VOTING CLOSED</div>
-            <h1 class="closed-title" id="closedGroup"></h1>
-            <p class="closed-line">本组投票已结束</p>
-            <p class="waiting-small">Please welcome the next group</p>
+          <section class="participants-card">
+            <div class="screen-kicker">HONOR PARTICIPANTS</div>
+            <h1 class="participants-title">卓越之声·荣耀参与者</h1>
+            <div class="participants-grid">
+              ${PARTICIPANTS.map(name => `<span>${esc(name)}</span>`).join('')}
+            </div>
+            <p class="participants-footer">用声音传递力量，用热爱感染舞台，感谢每位参赛者的精彩呈现！</p>
           </section>
-          ${emergencyDock()}`;
-      } else {
+          ${hiddenNav()}`;
+        return;
+      }
+
+      if (d.phase === 'performing' && group) {
+        wrap.className = 'performing-screen';
+        wrap.innerHTML = `
+          <section class="performing-card">
+            <div class="screen-kicker">NOW PERFORMING / 正在演绎</div>
+            <h1 class="perform-title">${esc(group.name)}</h1>
+            <div class="perform-work">《${esc(group.work)}》</div>
+            <div class="perform-members">${esc(safeMembers(group))}</div>
+            <div class="performing-label">演绎中</div>
+            <div class="stage-controls">
+              <button onclick="startVotingForCurrent()">演绎结束，开始投票倒计时</button>
+              <button class="secondary" onclick="showCompetitionMenu()">返回比赛入口</button>
+            </div>
+          </section>
+          ${hiddenNav()}`;
+        return;
+      }
+
+      if (d.phase === 'closed' && group) {
+        wrap.className = 'closed-screen-page';
+        wrap.innerHTML = `
+          <section class="closed-card">
+            <div class="screen-kicker">VOTING CLOSED</div>
+            <h1 class="closed-title">${esc(group.name)}</h1>
+            <div class="perform-work">《${esc(group.work)}》</div>
+            <p class="closed-line">本组投票已结束</p>
+            <div class="stage-controls">
+              <button onclick="showCompetitionMenu()">进入下一组</button>
+              <button class="secondary" onclick="showResults()">查看比赛结果</button>
+            </div>
+          </section>
+          ${hiddenNav()}`;
+        return;
+      }
+
+      if ((d.phase === 'canvassing' || d.phase === 'thinking') && group) {
         wrap.className = 'voting-screen';
         wrap.innerHTML = `
           <section class="voting-info">
@@ -354,96 +455,107 @@ async function renderScreen() {
             <div class="voting-members" id="screenMembers"></div>
             <div id="screenPhase" class="voting-phase"></div>
             <p id="screenHint" class="voting-hint"></p>
+            <div class="stage-controls voting-control-line">
+              <button class="secondary" onclick="closeVoting()">提前结束投票</button>
+            </div>
           </section>
-
           <section class="voting-action">
             <div class="ring-wrap" id="ringWrap">
               <svg class="timer-ring" viewBox="0 0 220 220" aria-label="Countdown ring">
                 <circle class="ring-bg" cx="110" cy="110" r="94"></circle>
                 <circle class="ring-progress" id="ringProgress" cx="110" cy="110" r="94"></circle>
               </svg>
-              <div class="ring-content">
-                <div id="screenTimer" class="ring-time">--:--</div>
-                <div id="ringLabel" class="ring-label">VOTING</div>
-              </div>
+              <div class="ring-content"><div id="screenTimer" class="ring-time">--:--</div><div id="ringLabel" class="ring-label">VOTING</div></div>
             </div>
-            <div class="qr-stage">
-              <div class="qr-box"><div id="qrcode"></div></div>
-              <div class="qr-caption">Scan to Vote / 扫码投票</div>
-              <p class="subtle vote-url" id="voteUrlText"></p>
-            </div>
+            <div class="qr-stage"><div class="qr-box"><div id="qrcode"></div></div><div class="qr-caption">扫码投票 / Scan to Vote</div><p class="subtle vote-url" id="voteUrlText"></p></div>
           </section>
-          ${emergencyDock()}`;
+          ${hiddenNav()}`;
         buildQRCode(230);
       }
     }
 
-    if (d.phase === 'performing') {
-      if ($('perfGroup')) $('perfGroup').textContent = safeName(group);
-      if ($('perfWork')) $('perfWork').textContent = `《${safeWork(group)}》`;
-      if ($('perfMembers')) $('perfMembers').textContent = safeMembers(group);
-      return;
-    }
+    if ((d.phase === 'canvassing' || d.phase === 'thinking') && group) {
+      $('stageKicker').textContent = d.phase === 'canvassing' ? '拉票环节' : '最后投票';
+      $('screenGroup').textContent = group.name;
+      $('screenWork').textContent = `《${group.work}》`;
+      $('screenMembers').textContent = safeMembers(group);
 
-    if (d.phase === 'closed') {
-      if ($('closedGroup')) $('closedGroup').textContent = safeName(group);
-      return;
-    }
+      const ring = $('ringProgress');
+      const ringWrap = $('ringWrap');
+      const label = $('ringLabel');
+      const totalMs = getPhaseTotalMs(state, d.phase);
+      const phaseLeft = d.phaseRemainingMs || 0;
+      ringWrap.classList.remove('is-active', 'is-ending');
+      setRingProgress(ring, phaseLeft, totalMs, 590.619);
 
-    if ($('stageKicker')) $('stageKicker').textContent = d.phase === 'canvassing' ? '拉票环节' : '最后投票';
-    if ($('screenGroup')) $('screenGroup').textContent = safeName(group);
-    if ($('screenWork')) $('screenWork').textContent = `《${safeWork(group)}》`;
-    if ($('screenMembers')) $('screenMembers').textContent = safeMembers(group);
-
-    const ring = $('ringProgress');
-    const ringWrap = $('ringWrap');
-    const label = $('ringLabel');
-    const totalMs = getPhaseTotalMs(state, d.phase);
-    const phaseLeft = d.phaseRemainingMs || 0;
-    if (ringWrap) ringWrap.classList.remove('is-active', 'is-ending');
-    setRingProgress(ring, phaseLeft, totalMs, 590.619);
-
-    if (d.phase === 'canvassing') {
-      $('screenPhase').textContent = '拉票环节倒计时';
-      $('screenTimer').textContent = fmt(phaseLeft);
-      $('screenHint').textContent = '观众可扫码投票，当前为拉票时间。';
-      label.textContent = 'CANVASSING';
-      ringWrap.classList.add('is-active');
-      if (phaseLeft <= 10000) ringWrap.classList.add('is-ending');
-    } else if (d.phase === 'thinking') {
-      $('screenPhase').textContent = '现场观众投票倒计时';
-      $('screenTimer').textContent = fmt(phaseLeft);
-      $('screenHint').textContent = '最后投票中，请现场观众确认分数。';
-      label.textContent = 'FINAL VOTE';
+      if (d.phase === 'canvassing') {
+        $('screenPhase').textContent = '拉票环节倒计时';
+        $('screenTimer').textContent = fmt(phaseLeft);
+        $('screenHint').textContent = '观众可扫码进入投票，本阶段为拉票时间。';
+        label.textContent = 'CANVASSING';
+      } else {
+        $('screenPhase').textContent = '现场观众投票倒计时';
+        $('screenTimer').textContent = fmt(phaseLeft);
+        $('screenHint').textContent = '最后投票中，请现场观众确认分数。';
+        label.textContent = 'FINAL VOTE';
+      }
       ringWrap.classList.add('is-active');
       if (phaseLeft <= 10000) ringWrap.classList.add('is-ending');
     }
   } catch (e) {
-    document.body.innerHTML = `<main class="bigscreen-shell"><section class="connection-error"><h1>大屏连接异常</h1><p>${e.message}</p><p>请检查网络或刷新同步。</p><a href="admin.html" target="_blank">打开后台</a><a href="vote.html" target="_blank">打开投票页</a></section></main>`;
+    document.body.innerHTML = `<main class="bigscreen-shell"><section class="connection-error"><h1>大屏连接异常</h1><p>${esc(e.message)}</p><p>请检查网络或刷新同步。</p><button onclick="location.reload()">刷新同步</button></section></main>`;
   }
 }
-async function renderRanking() {
+
+async function renderResultsBarChart() {
   const results = await fetchResults();
   const wrap = $('screenMain');
-  wrap.className = 'ranking-stage';
+  screenLayoutKey = 'ranking';
+  wrap.dataset.ready = '1';
+  wrap.className = 'results-screen';
+  const maxScore = 10;
   wrap.innerHTML = `
-    <section class="ranking-card">
-      <div class="stage-kicker">DUBBING COMPETITION</div>
-      <h1 class="ranking-title">Final Ranking / 最终排名</h1>
-      <div class="ranking-list">
+    <section class="results-card">
+      <div class="screen-kicker">FINAL RESULTS</div>
+      <h1 class="results-title">比赛结果</h1>
+      <div class="bar-list">
         ${results.map((r, i) => {
-          const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
-          return `<div class="rank-row" style="animation-delay:${Math.min(i * 0.06, .54)}s">
-            <div class="rank-medal">${medal}</div>
-            <div class="rank-name">${safeName(r)}</div>
-            <div class="rank-score">${r.vote_count ? r.average_score.toFixed(2) : '-'}</div>
-            <div class="rank-votes">${r.vote_count} votes</div>
+          const width = Math.max(0, Math.min(100, (r.average_score / maxScore) * 100));
+          const score = r.vote_count ? r.average_score.toFixed(2) : '-';
+          return `<div class="bar-row" style="animation-delay:${Math.min(i * 0.06, .5)}s">
+            <div class="bar-rank">${i + 1}</div>
+            <div class="bar-main">
+              <div class="bar-label"><b>${esc(r.name)}</b><span>《${esc(r.work)}》</span></div>
+              <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
+            </div>
+            <div class="bar-score">${score}</div>
           </div>`;
         }).join('')}
       </div>
-    </section>`;
+    </section>
+    ${hiddenNav()}`;
 }
-let selectedScore = null;
+
+// Legacy admin page compatibility.
+function requireAdmin() { return true; }
+async function initAdmin() {
+  document.body.innerHTML = `<div class="page"><div class="card"><h1>后台已简化</h1><p class="subtle">现在请从大屏首页右下角隐藏导航进入“比赛入口”。小组信息已写入系统，不需要在后台添加。</p><a href="index.html"><button>打开大屏首页</button></a></div></div>`;
+}
+async function renderAdmin() {}
+async function renderAdminStatusOnly() {}
+async function saveGroup() {}
+async function startVoting() { await startVotingForCurrent(); }
+async function showPerformance() {}
+async function resetCurrentGroup() {
+  const state = await fetchState();
+  if (!state.current_group_id) return;
+  await getClient().from('votes').delete().eq('group_id', state.current_group_id);
+}
+async function resetAll() {
+  await getClient().from('votes').delete().neq('id', 0);
+  await goHome();
+}
+
 async function initVote() {
   ensureToken();
   document.querySelectorAll('.score-btn').forEach(btn => {
@@ -457,48 +569,42 @@ async function initVote() {
   await renderVote();
   setInterval(renderVote, 2000);
 }
-async function hasVoted(groupId) {
-  const token = ensureToken();
-  const { data, error } = await getClient().from('votes').select('score').eq('group_id', groupId).eq('voter_token', token).maybeSingle();
-  if (error) throw error;
-  return data;
-}
 async function renderVote() {
   try {
-    const [state, groups] = await Promise.all([fetchState(), fetchGroups()]);
+    const state = await fetchState();
     const d = derivePhase(state);
-    const group = groups.find(g => g.id === state.current_group_id);
-    $('voteGroup').textContent = group ? safeName(group) : 'Waiting';
+    const group = getGroupById(state.current_group_id);
+    $('voteGroup').textContent = group ? group.name : 'Waiting';
     $('voteTimer').textContent = d.phase === 'canvassing' || d.phase === 'thinking' ? fmt(d.remainingMs) : '--:--';
     $('votePhase').textContent = d.phase;
 
     const miniRing = $('voteRingProgress');
     const totalMs = getPhaseTotalMs(state, d.phase);
     setRingProgress(miniRing, d.phaseRemainingMs || 0, totalMs, 364.425);
-    if (miniRing && (d.phase !== 'canvassing' && d.phase !== 'thinking')) {
-      setRingProgress(miniRing, 0, 1, 364.425);
-    }
+    if (miniRing && (d.phase !== 'canvassing' && d.phase !== 'thinking')) setRingProgress(miniRing, 0, 1, 364.425);
 
     const canVote = (d.phase === 'canvassing' || d.phase === 'thinking') && state.voting_open && group;
     if (!canVote) {
       $('voteControls').style.display = 'none';
       let msg = '请等待投票开始 / Waiting for voting to start.';
-      if (d.phase === 'performing') msg = '本组正在演绎中，请稍后投票 / Performance in progress.';
-      if (d.phase === 'closed') msg = '该组投票已结束 / Voting for this group has closed.';
-      if (d.phase === 'ranking') msg = '比赛结果公布中 / Ranking is being shown.';
+      if (d.phase === 'performing') msg = `${group ? group.name : '当前小组'}正在演绎中，请稍后投票。`;
+      if (d.phase === 'closed') msg = `${group ? group.name : '该组'}投票已结束。`;
+      if (d.phase === 'ranking') msg = '比赛结果公布中。';
       setMsg('voteMsg', msg, 'notice');
       return;
     }
     const voted = await hasVoted(group.id);
     if (voted) {
       $('voteControls').style.display = 'none';
-      setMsg('voteMsg', `你已完成本组投票 / Submitted. Your score: ${voted.score}`, 'success');
+      setMsg('voteMsg', `你已完成本组投票。Your score: ${voted.score}`, 'success');
     } else {
       $('voteControls').style.display = 'block';
-      const prompt = d.phase === 'canvassing' ? '拉票环节已开始，投票通道开放 / Canvassing time, voting is open.' : '最后投票中，请确认你的分数 / Final voting time.';
+      const prompt = d.phase === 'canvassing' ? '拉票环节已开始，投票通道开放。' : '最后投票中，请确认你的分数。';
       setMsg('voteMsg', prompt, 'notice');
     }
-  } catch (e) { setMsg('voteMsg', e.message, 'error'); }
+  } catch (e) {
+    setMsg('voteMsg', e.message, 'error');
+  }
 }
 async function submitVote() {
   try {
@@ -513,7 +619,9 @@ async function submitVote() {
       if (String(error.message).includes('duplicate') || error.code === '23505') throw new Error('You have already voted for this group.');
       throw error;
     }
-    setMsg('voteMsg', `投票成功 / Submitted. Your score: ${selectedScore}`, 'success');
+    setMsg('voteMsg', `投票成功。Your score: ${selectedScore}`, 'success');
     await renderVote();
-  } catch (e) { setMsg('voteMsg', e.message, 'error'); }
+  } catch (e) {
+    setMsg('voteMsg', e.message, 'error');
+  }
 }

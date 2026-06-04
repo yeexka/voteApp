@@ -1,38 +1,34 @@
-# Dubbing Vote Static Supabase Version
+# Dubbing Vote App
 
-This version is designed for static hosting, such as Tencent Cloud Build & Deploy.
+静态版大屏投票系统。入口为 `index.html`。
 
-## Files
+## 大屏隐藏导航
 
-- `admin.html`: teacher control page
-- `screen.html`: big screen page
-- `vote.html`: student voting page
-- `config.js`: Supabase and site configuration
-- `setup.sql`: Supabase database setup
+右下角点击/悬停菜单：
 
-## Setup
+- 大屏首页
+- 比赛入口
+- 参赛名单
+- 比赛结果
+- 刷新同步
+- 全屏显示
 
-1. Create a Supabase project.
-2. Open Supabase Dashboard -> SQL Editor.
-3. Run everything in `setup.sql`.
-4. Open `config.js` and fill:
+## 比赛流程
 
-```js
-SUPABASE_URL: "https://xxxx.supabase.co",
-SUPABASE_ANON_KEY: "xxxx",
-ADMIN_CODE: "your admin code",
-PUBLIC_BASE_URL: "https://your deployed domain"
-```
+1. 打开 `index.html`
+2. 隐藏导航 → 比赛入口
+3. 点击对应小组
+4. 大屏显示小组名、作品名、成员名单、正在演绎中
+5. 演绎结束后点击“演绎结束，开始投票倒计时”
+6. 大屏进入拉票 1 分钟 + 最后投票 1 分钟，二维码只在投票阶段出现
+7. 投票结束后进入下一组或展示结果
 
-5. Push these files to GitHub.
-6. Deploy through Tencent Cloud Build & Deploy.
+## Supabase
 
-## URLs
+运行 `setup.sql` 创建表和写入小组信息。
 
-- `/admin.html`: admin
-- `/screen.html`: big screen
-- `/vote.html`: student voting page
+`config.js` 中填写：
 
-## Important Security Note
-
-This is a static frontend version. It is convenient, but not strongly secure because admin actions are performed from the browser. For a school competition, this is usually acceptable. For serious voting or public use, add a backend or Supabase Edge Functions for admin-only actions.
+- SUPABASE_URL
+- SUPABASE_ANON_KEY
+- PUBLIC_BASE_URL 可以留空，自动使用当前域名

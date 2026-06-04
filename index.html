@@ -11,10 +11,11 @@
   <script src="app.js"></script>
 </head>
 <body class="screen-page ums-theme" onload="initScreen()">
-  <main id="screenMain" class="bigscreen-shell">
-    <section class="waiting-screen ums-welcome">
-      <div class="waiting-status">等待后台开始比赛</div>
-    </section>
+  <main id="screenMain" class="bigscreen-shell home-only-screen">
+    <section class="waiting-screen ums-welcome" aria-label="Competition homepage"></section>
+    <nav class="hidden-nav" aria-label="Hidden navigation">
+      <button class="hidden-nav-toggle" type="button">☰</button>
+    </nav>
   </main>
 </body>
 </html>

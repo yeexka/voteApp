@@ -1,4 +1,4 @@
--- Supabase SQL setup for the static dubbing vote app.
+-- Supabase SQL setup for the dubbing vote app.
 -- Run this in Supabase Dashboard -> SQL Editor.
 
 create table if not exists groups (
@@ -31,24 +31,36 @@ create table if not exists votes (
   unique (group_id, voter_token)
 );
 
-
--- If you already created the old version, run these ALTER statements once.
 alter table groups add column if not exists work_title text default '';
 alter table groups add column if not exists members text default '';
 
-insert into groups (id, name)
+insert into groups (id, name, work_title, members)
 values
-(1, ''), (2, ''), (3, ''), (4, ''), (5, ''),
-(6, ''), (7, ''), (8, ''), (9, ''), (10, '')
-on conflict (id) do nothing;
+(1, '低调组', '小猪佩奇', '李峻宇、法舜哲、刘瑜董泽、邱傲然'),
+(2, '企鹅组', '马达加斯加的企鹅1', '朱海滨、王鸿飞、殷子尧、吴硕宸'),
+(3, '宠物王', '爱宠大机密', '王若璇、王薇茗、贾璀琦'),
+(4, '探案组', '疯狂动物城', '温子豪、袁睿、王雪瑜'),
+(5, '天煞队', '功夫熊猫3', '张峻瑜、郗梓淳、蒋家增'),
+(6, '随便队', '神偷奶爸', '王梓安、张迎栋、周雨馨、刘小童'),
+(7, 'Team Spirit', '狮子王', '金旻志、王铭洋、颜鑫宇、张晶贻'),
+(8, '蔚蓝队', '阿甘正传', '王文煊、Sami'),
+(9, '无人队', '奇幻森林', '闫梓翔、娄家辉')
+on conflict (id) do update set
+  name = excluded.name,
+  work_title = excluded.work_title,
+  members = excluded.members;
 
 insert into event_state (id, current_group_id, phase, voting_open, show_ranking)
 values (1, null, 'idle', false, false)
-on conflict (id) do nothing;
-
--- Simple public policies for static hosting.
--- Important: This is convenient for a school event, not secure against technical students.
--- For stricter security, use a backend or Supabase Edge Functions for admin actions.
+on conflict (id) do update set
+  current_group_id = null,
+  phase = 'idle',
+  voting_open = false,
+  voting_start_time = null,
+  canvassing_end_time = null,
+  voting_end_time = null,
+  show_ranking = false,
+  updated_at = now();
 
 alter table groups enable row level security;
 alter table event_state enable row level security;
@@ -71,3 +83,6 @@ create policy "public modify event_state" on event_state for update using (true)
 create policy "public read votes" on votes for select using (true);
 create policy "public insert votes" on votes for insert with check (true);
 create policy "public delete votes" on votes for delete using (true);
+
+-- If this is the final event database and you want to clear test votes, run:
+-- delete from votes;
