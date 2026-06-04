@@ -43,14 +43,14 @@ const COMPETITION_GROUPS = [
   {
     id: 7,
     name: "Team Spirit",
-    work: "狮子王",
-    members: ["金旻志", "王铭洋", "颜鑫宇", "张晶贻"],
+    work: "盗梦空间",
+    members: ["金旻志", "王铭洋", "颜鑫宇"],
   },
   {
     id: 8,
     name: "蔚蓝队",
     work: "阿甘正传",
-    members: ["王文煊", "Sami"],
+    members: ["王文煊"],
   },
   {
     id: 9,
@@ -683,7 +683,6 @@ ${emojiConfetti(60)}
   </div>
 </div>
     <section class="results-card premium-results-card">
-      <div class="screen-kicker">FINAL RESULTS</div>
       <h1 class="results-title">比赛结果</h1>
 
       <div class="podium-wrap">
