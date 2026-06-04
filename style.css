@@ -2689,3 +2689,108 @@ body.screen-page {
   font-size: clamp(58px, 5.8vw, 104px) !important;
   line-height: 1.05 !important;
 }
+/* 首页主标题：第一行不换行 */
+.home-main-title {
+  font-size: clamp(52px, 5.4vw, 96px) !important;
+  line-height: 1.18 !important;
+  white-space: nowrap !important;
+}
+
+.home-main-title span {
+  display: block;
+  font-size: 1.08em !important;
+  white-space: nowrap !important;
+}
+/* 结果页：领奖台布局 */
+.podium-wrap {
+  display: grid !important;
+  grid-template-columns: 1fr 1.18fr 1fr !important;
+  align-items: end !important;
+  gap: 26px !important;
+  margin-top: 28px !important;
+  margin-bottom: 34px !important;
+}
+
+/* 三个奖项基础样式 */
+.podium-card {
+  min-height: 300px;
+  border-radius: 36px !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.1)
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.34) !important;
+  box-shadow: 0 22px 60px rgba(0, 45, 38, 0.28) !important;
+}
+
+/* 冠军：中间，放大，更亮 */
+.podium-rank-1 {
+  min-height: 360px !important;
+  transform: scale(1.08) translateY(-18px) !important;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 255, 255, 0.55),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 232, 142, 0.42),
+      rgba(255, 255, 255, 0.16)
+    ) !important;
+  border: 2px solid rgba(255, 238, 170, 0.85) !important;
+  box-shadow:
+    0 0 38px rgba(255, 225, 120, 0.36),
+    0 28px 80px rgba(0, 45, 38, 0.34) !important;
+}
+
+/* 亚军 */
+.podium-rank-2 {
+  min-height: 315px !important;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 255, 255, 0.36),
+      transparent 40%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(220, 240, 245, 0.34),
+      rgba(255, 255, 255, 0.12)
+    ) !important;
+}
+
+/* 季军 */
+.podium-rank-3 {
+  min-height: 300px !important;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 220, 180, 0.34),
+      transparent 40%
+    ),
+    linear-gradient(180deg, rgba(220, 150, 80, 0.26), rgba(255, 255, 255, 0.1)) !important;
+}
+
+/* 奖牌图标更大 */
+.podium-icon {
+  font-size: clamp(58px, 5vw, 88px) !important;
+}
+
+/* 冠军名字更突出 */
+.podium-rank-1 .podium-name {
+  font-size: clamp(38px, 4vw, 68px) !important;
+}
+
+.podium-rank-1 .podium-score {
+  font-size: clamp(46px, 5vw, 82px) !important;
+}
+
+/* 让结果页更喜庆一点 */
+.results-title {
+  color: #fff8d8 !important;
+  text-shadow:
+    0 0 18px rgba(255, 236, 160, 0.35),
+    0 10px 28px rgba(0, 60, 50, 0.35) !important;
+}

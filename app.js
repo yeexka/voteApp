@@ -459,7 +459,7 @@ async function renderScreen() {
               <span>“声临其境”杯配音大赛</span>
             </h1>
             <p class="home-subtitle">以声入戏，以译传情</p>
-            <div class="home-status-pill">等待比赛开始</div>
+<div class="home-status-pill" onclick="this.style.display='none'">等待比赛开始</div>
           </section>
           ${hiddenNav()}`;
         return;
