@@ -2678,7 +2678,7 @@ body.screen-page {
 
 /* 校徽缩小 */
 .participants-logo {
-  width: 120px;
+  width: 220px;
   height: auto;
   flex-shrink: 0;
 }
