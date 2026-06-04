@@ -2974,3 +2974,68 @@ body.screen-page {
     transform: translate(var(--x), var(--y)) scale(1.15);
   }
 }
+.firework span:nth-child(even) {
+  border-radius: 3px;
+  width: 10px;
+  height: 22px;
+}
+/* 首页：不同电脑上保持整体居中 */
+.home-code-screen {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+}
+
+.home-code-card {
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  text-align: center !important;
+  transform: translateY(-10px) !important;
+}
+
+.home-main-title {
+  margin: 0 !important;
+  max-width: 94vw !important;
+  font-size: clamp(46px, 5.2vw, 92px) !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+}
+
+.home-main-title span {
+  display: block !important;
+  white-space: nowrap !important;
+  font-size: 1.05em !important;
+}
+
+.home-subtitle {
+  margin-top: 34px !important;
+}
+
+.home-status-pill {
+  margin-top: 46px !important;
+}
+/* 参赛名单：禁止滚动，压缩整体高度 */
+.participants-wall-screen {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+.participants-wall {
+  height: 100vh !important;
+  min-height: 0 !important;
+  padding: 24px 60px 28px !important;
+  transform: translateY(-18px) !important;
+
+  display: grid !important;
+  grid-template-rows: auto auto 1fr auto !important;
+}
