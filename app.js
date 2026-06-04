@@ -613,12 +613,17 @@ async function renderResultsBarChart() {
   const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean);
   const rest = results.slice(3);
   wrap.innerHTML = `
-  <div class="side-fireworks">
+<div class="side-fireworks">
   <div class="firework left">
     <span></span><span></span><span></span><span></span><span></span>
     <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
   </div>
+
   <div class="firework right">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
     <span></span><span></span><span></span><span></span><span></span>
     <span></span><span></span><span></span><span></span><span></span>
   </div>
