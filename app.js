@@ -610,28 +610,37 @@ async function renderResultsBarChart() {
   wrap.className = "results-screen";
   const maxScore = 10;
   const top3 = results.slice(0, 3);
+  const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean);
   const rest = results.slice(3);
-
   wrap.innerHTML = `
     <section class="results-card premium-results-card">
       <div class="screen-kicker">FINAL RESULTS</div>
       <h1 class="results-title">比赛结果</h1>
 
       <div class="podium-wrap">
-        ${top3
-          .map((r, i) => {
-            const medal = i === 0 ? "冠军" : i === 1 ? "亚军" : "季军";
-            const icon = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
-            const score = r.vote_count ? r.average_score.toFixed(2) : "-";
-            return `<div class="podium-card podium-${i + 1}">
+      
+            ${podiumOrder
+              .map((r, i) => {
+                const originalRank =
+                  results.findIndex((item) => item.id === r.id) + 1;
+                const medal =
+                  originalRank === 1
+                    ? "冠军"
+                    : originalRank === 2
+                      ? "亚军"
+                      : "季军";
+                const icon =
+                  originalRank === 1 ? "🥇" : originalRank === 2 ? "🥈" : "🥉";
+                const score = r.vote_count ? r.average_score.toFixed(2) : "-";
+                return `<div class="podium-card podium-${originalRank}">
             <div class="podium-icon">${icon}</div>
             <div class="podium-medal">${medal}</div>
             <div class="podium-name">${esc(r.name)}</div>
             <div class="podium-work">《${esc(r.work)}》</div>
             <div class="podium-score">${score}</div>
           </div>`;
-          })
-          .join("")}
+              })
+              .join("")}
       </div>
 
       <div class="bar-list refined-bar-list">
