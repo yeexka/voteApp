@@ -2572,7 +2572,7 @@ body.screen-page {
   min-height: 40px;
   padding: 7px 14px;
   color: #e7dd90 !important;
-  font-size: clamp(34px, 1.25vw, 23px);
+  font-size: clamp(36px, 1.25vw, 30px);
   font-weight: 850;
 
   letter-spacing: 0.06em;
