@@ -1839,6 +1839,7 @@ body.screen-page {
   font-weight: 800;
 }
 .participants-footer {
+  font-family: "STKaiti", "Kaiti SC", "KaiTi", "Noto Serif SC", serif;
   color: #fff;
   font-size: clamp(22px, 2.2vw, 34px);
   font-weight: 950;
@@ -2531,6 +2532,7 @@ body.screen-page {
   box-shadow: none;
   backdrop-filter: none;
 }
+
 .participants-kicker {
   justify-self: center;
   color: rgba(255, 255, 255, 0.92);
@@ -2547,34 +2549,50 @@ body.screen-page {
   text-shadow: none;
 }
 .participants-name-wall {
-  align-self: center;
+  /* align-self: center;
   width: min(1180px, 96%);
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
-  gap: 12px 18px;
+  gap: 12px 18px; */
+  display: grid !important;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 14px 18px;
+  width: min(1180px, 94%);
+  margin: 0 auto;
 }
 .participants-name-wall span {
+  font-family: "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 96px;
   min-height: 40px;
   padding: 7px 14px;
-  color: rgba(255, 228, 54, 0.96);
+  color: #e7dd90 !important;
   font-size: clamp(32px, 1.25vw, 23px);
   font-weight: 850;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  backdrop-filter: none;
-  letter-spacing: 0.03em;
+
+  letter-spacing: 0.06em;
   box-shadow: none !important;
   text-shadow: none !important;
   animation: nameFadeIn 0.5s ease both;
   animation-delay: calc(var(--i) * 0.012s);
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
 }
 .participants-wall .participants-footer {
   justify-self: center;
@@ -2612,6 +2630,7 @@ body.screen-page {
     padding: 7px 12px;
   }
   .participants-wall .participants-title {
+    font-family: "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
     font-size: clamp(42px, 10vw, 78px);
   }
 }
