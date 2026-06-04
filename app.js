@@ -314,6 +314,34 @@ function setMsg(id, text, type = "notice") {
   el.textContent = text;
   el.style.display = text ? "block" : "none";
 }
+function emojiConfetti(count = 90) {
+  const emojis = ["🎉", "🎊", "✨", "⭐", "🏆", "🥳", "🌟", "💫"];
+
+  return `<div class="emoji-confetti-layer">
+    ${Array.from({ length: count })
+      .map(() => {
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        const size = 22 + Math.random() * 34;
+        const delay = Math.random() * 4;
+        const duration = 3.5 + Math.random() * 3;
+        const rotate = Math.random() * 720 - 360;
+        const drift = Math.random() * 160 - 80;
+
+        return `<span style="
+          left:${left}%;
+          top:${top}%;
+          font-size:${size}px;
+          animation-delay:${delay}s;
+          animation-duration:${duration}s;
+          --rotate:${rotate}deg;
+          --drift:${drift}px;
+        ">${emoji}</span>`;
+      })
+      .join("")}
+  </div>`;
+}
 
 function hiddenNav() {
   return `<nav class="hidden-nav" aria-label="Hidden navigation">
@@ -637,6 +665,7 @@ async function renderResultsBarChart() {
   const rest = results.slice(3);
   wrap.innerHTML = `
 <div class="side-fireworks">
+${emojiConfetti(120)}
   <div class="firework left">
     <span></span><span></span><span></span><span></span><span></span>
     <span></span><span></span><span></span><span></span><span></span>
