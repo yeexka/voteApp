@@ -618,6 +618,19 @@ async function renderVote() {
     const d = derivePhase(state);
     const group = getGroupById(state.current_group_id);
     $('voteGroup').textContent = group ? group.name : 'Waiting';
+    const mobileCoverSlot = $('mobileCoverSlot');
+    if (mobileCoverSlot) {
+      if (group) {
+        const expected = String(group.id);
+        if (mobileCoverSlot.dataset.groupId !== expected) {
+          mobileCoverSlot.innerHTML = coverImg(group, 'mobile-cover');
+          mobileCoverSlot.dataset.groupId = expected;
+        }
+      } else {
+        mobileCoverSlot.innerHTML = '';
+        mobileCoverSlot.dataset.groupId = '';
+      }
+    }
     $('voteTimer').textContent = d.phase === 'canvassing' || d.phase === 'thinking' ? fmt(d.remainingMs) : '--:--';
     $('votePhase').textContent = d.phase;
 

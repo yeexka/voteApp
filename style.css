@@ -2114,3 +2114,43 @@ body.screen-page {
     width: min(460px, 82vw);
   }
 }
+
+
+/* ===== Mobile vote page group cover ===== */
+.mobile-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 14px 0 18px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.26);
+  background: rgba(255,255,255,.10);
+  box-shadow: 0 16px 44px rgba(0, 43, 36, .22);
+}
+
+.mobile-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 手机端标题有封面后稍微收一点，不然页面像在堆砖。 */
+.mobile-group {
+  margin-bottom: 10px !important;
+}
+
+.mini-ring-wrap {
+  margin-top: 4px !important;
+}
+
+/* 小屏手机避免封面太高，把内容压出屏幕。 */
+@media (max-width: 430px) {
+  .mobile-cover {
+    border-radius: 18px;
+    margin: 10px 0 14px;
+  }
+  .mini-ring-wrap {
+    width: 148px;
+  }
+}
