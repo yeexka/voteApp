@@ -2634,3 +2634,18 @@ body.screen-page {
     font-size: clamp(42px, 10vw, 78px);
   }
 }
+/* 参赛名单标题位置调整 */
+.participants-wall {
+  padding-top: 28px !important;
+  align-items: start !important;
+}
+
+.participants-kicker {
+  margin-top: 0 !important;
+}
+
+.participants-wall .participants-title {
+  margin-top: 16px !important;
+  margin-bottom: 28px !important;
+  font-size: clamp(62px, 6.4vw, 108px) !important;
+}
