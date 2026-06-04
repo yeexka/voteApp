@@ -10,7 +10,7 @@ window.APP_CONFIG = {
 
   // This should be your deployed site base URL, no ending slash.
   // Example: https://your-app.example.com
-  PUBLIC_BASE_URL: "",
+  PUBLIC_BASE_URL: "https://ums.kbai.net",
 
   CANVASSING_SECONDS: 60,
   THINKING_SECONDS: 60,
