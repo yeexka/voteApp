@@ -578,9 +578,7 @@ async function renderScreen() {
 
     if ((d.phase === "canvassing" || d.phase === "thinking") && group) {
       $("stageKicker").textContent =
-        d.phase === "canvassing"
-          ? "CANVASSING TIME · 拉票环节"
-          : "FINAL VOTING · 最后投票";
+        d.phase === "canvassing" ? "拉票环节" : "最后投票";
       $("screenGroup").textContent = group.name;
       $("screenWork").textContent = `《${group.work}》`;
       const coverSlot = $("votingCoverSlot");
@@ -850,7 +848,9 @@ async function renderAdminStatusOnly() {
 
 async function clearGroupVotes(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(`确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`);
+  const ok = confirm(
+    `确定清空「${group ? group.name : groupId}」的所有投票记录吗？清空后该组可以重新投票。`,
+  );
   if (!ok) return;
 
   const { error } = await getClient()
@@ -869,7 +869,9 @@ async function clearGroupVotes(groupId) {
 
 async function restartGroupVoting(groupId) {
   const group = getGroupById(groupId);
-  const ok = confirm(`确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`);
+  const ok = confirm(
+    `确定清空「${group ? group.name : groupId}」票数，并重新开放 2 分钟投票吗？`,
+  );
   if (!ok) return;
 
   const { error } = await getClient()
@@ -918,7 +920,9 @@ function fillEmergencyScoreForm(groupId, voteCount = 1, avgScore = 8) {
 
   if (groupSelect) groupSelect.value = String(groupId);
   if (countInput) countInput.value = voteCount && voteCount > 0 ? voteCount : 1;
-  if (avgInput) avgInput.value = avgScore && avgScore > 0 ? Number(avgScore).toFixed(2) : "";
+  if (avgInput)
+    avgInput.value =
+      avgScore && avgScore > 0 ? Number(avgScore).toFixed(2) : "";
 
   const panel = document.querySelector(".emergency-score-panel");
   if (panel) panel.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -967,7 +971,11 @@ async function applyEmergencyScore() {
     return;
   }
 
-  if (!Number.isFinite(targetAverage) || targetAverage < 1 || targetAverage > 10) {
+  if (
+    !Number.isFinite(targetAverage) ||
+    targetAverage < 1 ||
+    targetAverage > 10
+  ) {
     alert("目标均分必须在 1 到 10 之间。");
     return;
   }
@@ -978,10 +986,10 @@ async function applyEmergencyScore() {
 
   const ok = confirm(
     `确定清空「${group ? group.name : groupId}」原有投票，并写入应急成绩吗？\n\n` +
-    `投票人数：${scores.length}\n` +
-    `总分：${realTotal}\n` +
-    `实际均分：${realAverage.toFixed(2)}\n\n` +
-    `注意：因为 votes 表单个分数只能是 1 到 10 的整数，系统会自动生成最接近目标均分的投票记录。`
+      `投票人数：${scores.length}\n` +
+      `总分：${realTotal}\n` +
+      `实际均分：${realAverage.toFixed(2)}\n\n` +
+      `注意：因为 votes 表单个分数只能是 1 到 10 的整数，系统会自动生成最接近目标均分的投票记录。`,
   );
 
   if (!ok) return;
@@ -1012,9 +1020,9 @@ async function applyEmergencyScore() {
 
   alert(
     `已写入「${group ? group.name : groupId}」应急成绩。\n\n` +
-    `投票人数：${scores.length}\n` +
-    `总分：${realTotal}\n` +
-    `均分：${realAverage.toFixed(2)}`
+      `投票人数：${scores.length}\n` +
+      `总分：${realTotal}\n` +
+      `均分：${realAverage.toFixed(2)}`,
   );
 
   await renderAdmin();
@@ -1047,7 +1055,6 @@ async function resetAll() {
   await goHome();
   await renderAdmin();
 }
-
 
 async function initVote() {
   ensureToken();
@@ -1133,7 +1140,7 @@ async function renderVote() {
       $("voteControls").style.display = "block";
       const prompt =
         d.phase === "canvassing"
-          ? "当前为拉票环节，可先完成投票，也可等待最后投票阶段。"
+          ? "当前为拉票环节，可进行投票，也可等待拉票后再进行投票，请注意每人每组仅可打分一次。"
           : "当前为最后投票阶段，请确认并提交你的分数。";
       setMsg("voteMsg", prompt, "notice");
     }
