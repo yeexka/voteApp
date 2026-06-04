@@ -3393,7 +3393,7 @@ body.screen-page {
 }
 /* 手机端 Logo：浮动显示，不占页面高度 */
 .mobile-logo-wrap {
-  position: fixed !important;
+  /* position: fixed !important; */
   top: 10px !important;
   left: 10px !important;
   z-index: 50 !important;
