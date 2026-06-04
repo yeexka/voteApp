@@ -470,6 +470,16 @@ function buildQRCode(width = 230) {
 }
 
 async function initScreen() {
+  await updateState({
+    current_group_id: null,
+    phase: "idle",
+    voting_open: false,
+    show_ranking: false,
+    voting_start_time: null,
+    canvassing_end_time: null,
+    voting_end_time: null,
+  });
+
   await renderScreen();
   setInterval(renderScreen, 1000);
 }
@@ -736,7 +746,22 @@ ${emojiConfetti(60)}
 }
 // Admin dashboard for emergency control.
 function requireAdmin() {
-  return true;
+  const saved = sessionStorage.getItem("dubbing_admin_ok");
+
+  if (saved === "yes") {
+    return true;
+  }
+
+  const input = prompt("请输入后台管理密码：");
+
+  if (input === cfg.ADMIN_CODE) {
+    sessionStorage.setItem("dubbing_admin_ok", "yes");
+    return true;
+  }
+
+  alert("密码错误，无法进入后台。");
+  location.href = "index.html";
+  return false;
 }
 
 function adminShell() {

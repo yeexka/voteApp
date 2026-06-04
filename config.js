@@ -6,7 +6,7 @@ window.APP_CONFIG = {
 
   // This only protects the admin page in the browser. It is enough for a classroom event,
   // but it is not bank-level security, because humans keep inventing developer tools.
-  ADMIN_CODE: "123456",
+  ADMIN_CODE: "ums20260605",
 
   // This should be your deployed site base URL, no ending slash.
   // Example: https://your-app.example.com

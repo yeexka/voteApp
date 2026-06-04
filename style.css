@@ -3499,3 +3499,28 @@ body.screen-page {
   position: relative;
   z-index: 5;
 }
+/* 手机端：已选择分数的强对比样式 */
+.score-btn.selected {
+  background: linear-gradient(135deg, #ffb000, #ff5a1f) !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+
+  transform: scale(1.12) !important;
+  box-shadow:
+    0 0 0 4px rgba(255, 176, 0, 0.35),
+    0 10px 24px rgba(255, 90, 31, 0.45) !important;
+
+  font-weight: 900 !important;
+}
+
+/* 没选中的按钮弱一点，让选中的更明显 */
+.score-btn:not(.selected) {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+/* 点按时有反馈 */
+.score-btn:active {
+  transform: scale(0.96) !important;
+}
