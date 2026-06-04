@@ -3558,3 +3558,294 @@ body.screen-page {
 .bar-fill {
   transition: none !important;
 }
+/* ===== Results page: light fireworks, not laggy carnival mode ===== */
+
+/* 先禁掉旧的大量烟花，避免旧 CSS 继续作妖 */
+.side-fireworks:not(.light-side-fireworks),
+.paper-confetti,
+.confetti-layer {
+  display: none !important;
+  animation: none !important;
+}
+
+/* 轻量静态氛围 */
+.results-static-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 16% 18%,
+      rgba(255, 232, 142, 0.18),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 84% 18%,
+      rgba(255, 232, 142, 0.16),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 50% 96%,
+      rgba(255, 255, 255, 0.08),
+      transparent 26%
+    );
+}
+
+/* 少量 emoji，保留喜庆感，但不要变成表情包轰炸 */
+.light-emoji-confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.light-emoji-confetti span {
+  position: absolute;
+  display: inline-block;
+  opacity: 0;
+  animation-name: lightEmojiFloat;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes lightEmojiFloat {
+  0% {
+    opacity: 0;
+    transform: translate(0, 24px) rotate(0deg) scale(0.55);
+  }
+
+  18% {
+    opacity: 0.82;
+  }
+
+  58% {
+    opacity: 0.72;
+    transform: translate(var(--drift), -24px) rotate(calc(var(--rotate) / 2))
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--drift) * 1.35), -90px) rotate(var(--rotate))
+      scale(0.75);
+  }
+}
+
+/* 轻量左右侧彩纸：每边 6 个，不再堆几十个 */
+.light-side-fireworks {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+  display: block !important;
+}
+
+.light-side-fireworks .firework {
+  position: absolute;
+  top: 50%;
+  width: 260px;
+  height: 420px;
+  transform: translateY(-50%);
+}
+
+.light-side-fireworks .firework.left {
+  left: -70px;
+}
+
+.light-side-fireworks .firework.right {
+  right: -70px;
+}
+
+.light-side-fireworks .firework span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 18px;
+  border-radius: 4px;
+  opacity: 0;
+  background: #fff4b8;
+  animation: lightSideBurst 3.2s ease-out infinite;
+}
+
+.light-side-fireworks .firework span:nth-child(odd) {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+}
+
+.light-side-fireworks .firework.left span:nth-child(1) {
+  --x: 170px;
+  --y: -150px;
+  --r: 260deg;
+  animation-delay: 0s;
+  background: #fff4b8;
+}
+.light-side-fireworks .firework.left span:nth-child(2) {
+  --x: 250px;
+  --y: -80px;
+  --r: 420deg;
+  animation-delay: 0.35s;
+  background: #ffffff;
+}
+.light-side-fireworks .firework.left span:nth-child(3) {
+  --x: 300px;
+  --y: 0px;
+  --r: 300deg;
+  animation-delay: 0.7s;
+  background: #ffd36b;
+}
+.light-side-fireworks .firework.left span:nth-child(4) {
+  --x: 245px;
+  --y: 90px;
+  --r: 480deg;
+  animation-delay: 1.05s;
+  background: #a8fff0;
+}
+.light-side-fireworks .firework.left span:nth-child(5) {
+  --x: 160px;
+  --y: 160px;
+  --r: 340deg;
+  animation-delay: 1.4s;
+  background: #ffffff;
+}
+.light-side-fireworks .firework.left span:nth-child(6) {
+  --x: 330px;
+  --y: -170px;
+  --r: 520deg;
+  animation-delay: 1.75s;
+  background: #fff4b8;
+}
+
+.light-side-fireworks .firework.right span:nth-child(1) {
+  --x: -170px;
+  --y: -150px;
+  --r: -260deg;
+  animation-delay: 0s;
+  background: #fff4b8;
+}
+.light-side-fireworks .firework.right span:nth-child(2) {
+  --x: -250px;
+  --y: -80px;
+  --r: -420deg;
+  animation-delay: 0.35s;
+  background: #ffffff;
+}
+.light-side-fireworks .firework.right span:nth-child(3) {
+  --x: -300px;
+  --y: 0px;
+  --r: -300deg;
+  animation-delay: 0.7s;
+  background: #ffd36b;
+}
+.light-side-fireworks .firework.right span:nth-child(4) {
+  --x: -245px;
+  --y: 90px;
+  --r: -480deg;
+  animation-delay: 1.05s;
+  background: #a8fff0;
+}
+.light-side-fireworks .firework.right span:nth-child(5) {
+  --x: -160px;
+  --y: 160px;
+  --r: -340deg;
+  animation-delay: 1.4s;
+  background: #ffffff;
+}
+.light-side-fireworks .firework.right span:nth-child(6) {
+  --x: -330px;
+  --y: -170px;
+  --r: -520deg;
+  animation-delay: 1.75s;
+  background: #fff4b8;
+}
+
+@keyframes lightSideBurst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.55);
+  }
+
+  15% {
+    opacity: 0.85;
+  }
+
+  68% {
+    opacity: 0.65;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(0.9);
+  }
+}
+
+/* 结果主体在烟花上方，避免挡字 */
+.results-card {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+/* 降低重阴影和复杂滤镜，大屏更顺滑 */
+.premium-results-card,
+.podium-card,
+.refined-bar-row {
+  backdrop-filter: none !important;
+  filter: none !important;
+}
+
+.premium-results-card {
+  box-shadow: 0 18px 48px rgba(0, 45, 38, 0.24) !important;
+}
+
+.podium-card {
+  box-shadow: 0 14px 34px rgba(0, 45, 38, 0.18) !important;
+  transition: none !important;
+}
+
+/* 只突出冠军，别再让亚军抢戏 */
+.podium-card {
+  transform: none !important;
+}
+
+.podium-1 {
+  transform: scale(1.05) translateY(-12px) !important;
+  box-shadow:
+    0 0 28px rgba(255, 225, 120, 0.26),
+    0 18px 42px rgba(0, 45, 38, 0.22) !important;
+  z-index: 4 !important;
+}
+
+.podium-2,
+.podium-3 {
+  transform: none !important;
+}
+
+/* 关掉榜单本体动画，卡顿主要留给礼花，别让所有元素一起发疯 */
+.results-screen .podium-card,
+.results-screen .bar-row,
+.results-screen .bar-fill {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+}
+
+.refined-bar-list {
+  gap: 8px !important;
+}
+
+.refined-bar-row {
+  min-height: 48px !important;
+  padding: 8px 14px !important;
+}
+
+.bar-track {
+  height: 10px !important;
+}
+
+.bar-fill {
+  transition: none !important;
+}
