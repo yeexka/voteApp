@@ -846,6 +846,8 @@ function adminShell() {
 }
 
 async function initAdmin() {
+  if (!requireAdmin()) return;
+
   document.body.innerHTML = adminShell();
   await renderAdmin();
 }
