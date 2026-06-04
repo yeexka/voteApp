@@ -1197,7 +1197,7 @@ async function renderVote() {
       $("voteControls").style.display = "block";
       const prompt =
         d.phase === "canvassing"
-          ? "当前为拉票环节，可先完成投票，也可等待最后投票阶段。"
+          ? "当前为拉票环节，可进行打分，也在拉票结束后打分。请注意每人对一个作品仅有一次打分机会~"
           : "当前为最后投票阶段，请确认并提交你的分数。";
       setMsg("voteMsg", prompt, "notice");
     }
