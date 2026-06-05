@@ -3733,20 +3733,36 @@ body.screen-page .voting-control-line {
     height: min(54vw, 420px) !important;
   }
 }
+
 /* =========================================================
-   PATCH FROM style1
-   保留 style2 作为主样式；
-   只把 style1 的倒计时、按钮风格、扫码字体、比赛结果页样式覆盖回来。
-   这次不大扫除 CSS，避免网页再次经历文明崩塌。
+   FINAL SELECTIVE PATCH
+   Base: style2.css
+   From style1.css:
+   - countdown ring
+   - buttons
+   - QR caption / URL font
+   - complete results page
+   Left voting info is kept.
    ========================================================= */
 
-/* ---------- style1 button style ---------- */
-button,
-input,
-select {
-  font: inherit;
+:root {
+  --green-900: #003c32;
+  --green-850: #00483d;
+  --green-800: #005141;
+  --green-700: #006756;
+  --gold-100: #fff6d6;
+  --gold-200: #fff0a8;
+  --gold-300: #ffd36b;
+  --gold-400: #ffb000;
+  --white: #ffffff;
+  --muted: rgba(255, 255, 255, 0.78);
+  --line: rgba(255, 255, 255, 0.24);
+  --glass: rgba(0, 74, 62, 0.68);
+  --glass-light: rgba(255, 255, 255, 0.12);
+  --shadow: 0 24px 72px rgba(0, 45, 38, 0.28);
 }
 
+/* ---------- style1 button style ---------- */
 button {
   border: 0;
   cursor: pointer;
@@ -3781,49 +3797,40 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ---------- style1 countdown / QR voting screen ---------- */
-/* ---------- Voting big screen ---------- */
+.score-btn.selected {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #ffb000, #ff5a1f) !important;
+  border: 3px solid #ffffff !important;
+  transform: scale(1.12) !important;
+  box-shadow:
+    0 0 0 4px rgba(255, 176, 0, 0.35),
+    0 10px 24px rgba(255, 90, 31, 0.45) !important;
+}
+
+/* ---------- style1 countdown ring, but keep left info ---------- */
 .voting-screen {
   min-height: 100vh;
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(390px, 0.72fr);
-  align-items: center;
-  gap: clamp(28px, 4vw, 62px);
-  padding: clamp(32px, 5vw, 72px);
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(390px, 0.72fr) !important;
+  align-items: center !important;
+  gap: clamp(28px, 4vw, 62px) !important;
+  padding: clamp(32px, 5vw, 72px) !important;
   overflow: hidden;
+  background:
+    linear-gradient(rgba(0, 96, 80, 0.16), rgba(0, 65, 56, 0.22)),
+    url("assets/ums-clean-bg.jpg") center center / cover no-repeat !important;
 }
 
-.voting-info,
-.voting-action {
+.voting-info {
+  display: block !important;
   position: relative;
   z-index: 1;
 }
 
-.voting-group {
-  margin: 34px 0 12px;
-  color: var(--gold-100);
-  font-size: clamp(58px, 8vw, 124px);
-  line-height: 0.95;
-  font-weight: 950;
-  letter-spacing: -0.04em;
-  text-shadow: 0 22px 64px rgba(0, 45, 38, 0.36);
-}
-
-.voting-phase {
-  color: var(--gold-300);
-  font-size: clamp(32px, 3.8vw, 62px);
-  font-weight: 950;
-}
-
-.voting-hint {
-  max-width: 720px;
-  color: var(--muted);
-  font-size: clamp(19px, 1.7vw, 28px);
-  line-height: 1.5;
-}
-
 .voting-action {
+  position: relative;
+  z-index: 1;
   display: grid;
   justify-items: center;
   gap: 24px;
@@ -3852,7 +3859,7 @@ button:disabled {
 
 .ring-progress {
   fill: transparent;
-  stroke: var(--gold-300);
+  stroke: var(--gold-300) !important;
   stroke-width: 14;
   stroke-linecap: round;
   stroke-dasharray: 590.619;
@@ -3896,7 +3903,7 @@ button:disabled {
 }
 
 .ring-wrap.is-ending .ring-progress {
-  stroke: #ff4d4f;
+  stroke: #ff4d4f !important;
   filter: drop-shadow(0 0 18px rgba(255, 77, 79, 0.9));
 }
 
@@ -3932,22 +3939,26 @@ button:disabled {
 
 .qr-caption {
   margin-top: 15px;
-  color: var(--gold-300);
+  color: var(--gold-300) !important;
   font-size: 20px;
   font-weight: 900;
 }
 
 .vote-url {
   margin-bottom: 0;
+  color: rgba(255, 255, 255, 0.88);
   font-size: 12px;
   word-break: break-all;
 }
 
-.voting-control-line {
-  justify-content: flex-start;
+/* Make sure old style2 result rank selectors do not hijack the app's podium classes. */
+.podium-rank-1,
+.podium-rank-2,
+.podium-rank-3 {
+  all: unset;
 }
 
-/* ---------- style1 results page ---------- */
+
 /* ---------- Results ---------- */
 .results-screen {
   min-height: 100vh;
@@ -4182,8 +4193,6 @@ button:disabled {
 .firework.right span:nth-child(7) { --x: -390px; --y: -185px; --r: -440deg; animation-delay: 1.32s; background: #ffd36b; }
 .firework.right span:nth-child(8) { --x: -390px; --y: 150px; --r: -560deg; animation-delay: 1.54s; background: #ffffff; }
 
-/* ---------- style1 animations needed by countdown/results ---------- */
-/* ---------- Animations ---------- */
 @keyframes pulseGlow {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.025); }
@@ -4229,28 +4238,17 @@ button:disabled {
   }
 }
 
-/* ---------- scope safety fixes ---------- */
-/* 手机投票页的打分按钮继续保持强选中效果，别被通用 button 样式污染 */
-.score-btn.selected {
-  background: linear-gradient(135deg, #ffb000, #ff5a1f) !important;
-  color: #ffffff !important;
-  border: 3px solid #ffffff !important;
-  transform: scale(1.12) !important;
-  box-shadow:
-    0 0 0 4px rgba(255, 176, 0, 0.35),
-    0 10px 24px rgba(255, 90, 31, 0.45) !important;
-  font-weight: 900 !important;
-}
+@media (max-width: 980px) {
+  .voting-screen {
+    grid-template-columns: 1fr !important;
+    text-align: center;
+  }
 
-/* 确保倒计时最后阶段还是红色警示 */
-.ring-wrap.is-ending .ring-progress {
-  stroke: #ff4d4f !important;
-  filter: drop-shadow(0 0 18px rgba(255, 77, 79, 0.9)) !important;
-}
+  .podium-wrap {
+    grid-template-columns: 1fr;
+  }
 
-.ring-wrap.is-ending .ring-time {
-  color: #ffefef !important;
-  text-shadow:
-    0 0 18px rgba(255, 77, 79, 0.9),
-    0 8px 28px rgba(0, 0, 0, 0.35) !important;
+  .podium-1 {
+    transform: none;
+  }
 }
