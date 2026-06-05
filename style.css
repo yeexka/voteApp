@@ -3524,3 +3524,141 @@ body.screen-page {
 .score-btn:active {
   transform: scale(0.96) !important;
 }
+
+/* =========================================================
+   SAFE COLOR PATCH ONLY
+   只改颜色，不改布局，不碰 voting-screen / voting-info / voting-action。
+   防止再次出现两个二维码或页面炸开。
+   ========================================================= */
+
+/* 大屏倒计时圆环：金色 */
+body.screen-page .ring-progress,
+body.ums-theme .ring-progress,
+.ring-progress {
+  stroke: #ffd36b !important;
+  filter: drop-shadow(0 0 14px rgba(255, 211, 107, 0.82)) !important;
+}
+
+/* 最后 5 秒警示：红色保留 */
+body.screen-page .ring-wrap.is-ending .ring-progress,
+body.ums-theme .ring-wrap.is-ending .ring-progress,
+.ring-wrap.is-ending .ring-progress {
+  stroke: #ff4d4f !important;
+  filter: drop-shadow(0 0 18px rgba(255, 77, 79, 0.9)) !important;
+}
+
+/* 倒计时文字保持白色，不改布局 */
+body.screen-page .ring-time,
+body.ums-theme .ring-time,
+.ring-time {
+  color: #ffffff !important;
+}
+
+/* “激情拉票中 / 请投我们一票”等倒计时下方文字：偏金色 */
+body.screen-page .ring-label,
+body.ums-theme .ring-label,
+.ring-label {
+  color: #fff2a8 !important;
+}
+
+/* 扫码投票 / Scan to Vote：金色 */
+body.screen-page .qr-caption,
+body.ums-theme .qr-caption,
+.qr-caption {
+  color: #ffd36b !important;
+  font-weight: 950 !important;
+  text-shadow:
+    0 0 14px rgba(255, 211, 107, 0.28),
+    0 8px 20px rgba(0, 45, 38, 0.26) !important;
+}
+
+/* 投票链接保持白色，避免抢主标题 */
+body.screen-page .vote-url,
+body.ums-theme .vote-url,
+.vote-url {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+/* =========================================================
+   SAFE CHAMPION HIGHLIGHT PATCH ONLY
+   只强化冠军，不改结果页布局。
+   适配两种可能结构：
+   - .podium-1
+   - .podium-card:nth-child(2)  因为常见领奖台顺序是：亚军 / 冠军 / 季军
+   ========================================================= */
+
+/* 冠军卡片高亮 */
+.podium-1,
+.podium-card.podium-1,
+.podium-wrap .podium-card:nth-child(2) {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.58), transparent 42%),
+    linear-gradient(180deg, rgba(255, 232, 142, 0.46), rgba(255, 255, 255, 0.16)) !important;
+  border: 2px solid rgba(255, 238, 170, 0.95) !important;
+  box-shadow:
+    0 0 44px rgba(255, 225, 120, 0.46),
+    0 26px 72px rgba(0, 45, 38, 0.34) !important;
+  transform: scale(1.08) translateY(-18px) !important;
+  z-index: 5 !important;
+}
+
+/* 冠军名字和分数更亮 */
+.podium-1 .podium-name,
+.podium-card.podium-1 .podium-name,
+.podium-wrap .podium-card:nth-child(2) .podium-name {
+  color: #fff8d8 !important;
+  text-shadow:
+    0 0 16px rgba(255, 236, 160, 0.42),
+    0 8px 22px rgba(0, 45, 38, 0.28) !important;
+}
+
+.podium-1 .podium-score,
+.podium-card.podium-1 .podium-score,
+.podium-wrap .podium-card:nth-child(2) .podium-score {
+  color: #ffd36b !important;
+  text-shadow:
+    0 0 18px rgba(255, 211, 107, 0.52),
+    0 8px 22px rgba(0, 45, 38, 0.28) !important;
+}
+
+/* 冠军奖牌文字 */
+.podium-1 .podium-medal,
+.podium-card.podium-1 .podium-medal,
+.podium-wrap .podium-card:nth-child(2) .podium-medal {
+  color: #ffd36b !important;
+  font-weight: 950 !important;
+}
+
+/* 如果结果页是普通排名条，也把第一名高亮 */
+.refined-bar-list .refined-bar-row:first-child,
+.bar-list .bar-row:first-child,
+.ranking-list .rank-row:first-child {
+  background:
+    linear-gradient(90deg, rgba(255, 232, 142, 0.34), rgba(255, 255, 255, 0.12)) !important;
+  border-color: rgba(255, 238, 170, 0.72) !important;
+  box-shadow:
+    0 0 24px rgba(255, 225, 120, 0.28),
+    0 12px 32px rgba(0, 45, 38, 0.18) !important;
+}
+
+.refined-bar-list .refined-bar-row:first-child .bar-rank,
+.bar-list .bar-row:first-child .bar-rank,
+.ranking-list .rank-row:first-child .rank-medal {
+  color: #ffd36b !important;
+}
+
+.refined-bar-list .refined-bar-row:first-child .bar-score,
+.bar-list .bar-row:first-child .bar-score,
+.ranking-list .rank-row:first-child .rank-score {
+  color: #ffd36b !important;
+  text-shadow: 0 0 14px rgba(255, 211, 107, 0.46) !important;
+}
+
+/* 小屏幕不要把冠军顶太高，避免又炸 */
+@media (max-width: 980px) {
+  .podium-1,
+  .podium-card.podium-1,
+  .podium-wrap .podium-card:nth-child(2) {
+    transform: none !important;
+  }
+}
