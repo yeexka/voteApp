@@ -4,7 +4,7 @@ let screenLayoutKey = null;
 let selectedScore = null;
 let audioCtx = null;
 let lastCountdownSoundSecond = null;
-
+let localHomeOnly = false;
 const COMPETITION_GROUPS = [
   {
     id: 1,
@@ -520,21 +520,38 @@ function buildQRCode(width = 230) {
 }
 
 async function initScreen() {
-  await updateState({
-    current_group_id: null,
-    phase: "idle",
-    voting_open: false,
-    show_ranking: false,
-    voting_start_time: null,
-    canvassing_end_time: null,
-    voting_end_time: null,
-  });
+  localHomeOnly = true;
+  renderLocalHome();
 
-  await renderScreen();
+  setTimeout(() => {
+    localHomeOnly = false;
+    renderScreen();
+  }, 3000);
+
   setInterval(renderScreen, 1000);
 }
+function renderLocalHome() {
+  const wrap = $("screenMain");
+  if (!wrap) return;
 
+  screenLayoutKey = "local-idle";
+  wrap.dataset.ready = "1";
+  wrap.className = "home-code-screen";
+
+  wrap.innerHTML = `
+    <section class="home-code-card">
+      <h1 class="home-main-title">
+        马来西亚沙巴大学2+2国际本科首届<br>
+        <span>“声临其境”杯配音大赛</span>
+      </h1>
+      <p class="home-subtitle">以声入戏，以译传情</p>
+      <div class="home-status-pill" onclick="this.style.display='none'">等待比赛开始</div>
+    </section>
+    ${hiddenNav()}`;
+}
 async function renderScreen() {
+  if (localHomeOnly) return;
+
   try {
     const state = await fetchState();
     const d = derivePhase(state);
