@@ -2,6 +2,8 @@ const cfg = window.APP_CONFIG || {};
 let supabaseClient = null;
 let screenLayoutKey = null;
 let selectedScore = null;
+let audioCtx = null;
+let lastCountdownSoundSecond = null;
 
 const COMPETITION_GROUPS = [
   {
@@ -164,6 +166,53 @@ function esc(v) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+
+  return audioCtx;
+}
+
+function playTone(freq = 880, duration = 120, volume = 0.18, startDelay = 0) {
+  try {
+    const ctx = getAudioContext();
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(freq, ctx.currentTime + startDelay);
+
+    gain.gain.setValueAtTime(0.001, ctx.currentTime + startDelay);
+    gain.gain.exponentialRampToValueAtTime(
+      volume,
+      ctx.currentTime + startDelay + 0.02,
+    );
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      ctx.currentTime + startDelay + duration / 1000,
+    );
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.start(ctx.currentTime + startDelay);
+    oscillator.stop(ctx.currentTime + startDelay + duration / 1000 + 0.03);
+  } catch (e) {
+    console.warn("Countdown sound failed:", e.message);
+  }
+}
+function playCountdownMotif() {
+  // 噔 噔 噔 蹬
+  playTone(784, 110, 0.18, 0.0); // G5
+  playTone(784, 110, 0.18, 0.18); // G5
+  playTone(784, 110, 0.18, 0.36); // G5
+  playTone(523, 260, 0.24, 0.58); // C5，最后一下更重
 }
 function safeName(g) {
   return g && g.name ? g.name : `Group ${g ? g.id : ""}`;
@@ -420,6 +469,7 @@ async function selectCompetitionGroup(id) {
   await renderScreen();
 }
 async function startVotingForCurrent() {
+  playTone(660, 60, 0.04);
   const state = await fetchState();
   const groupId = Number(state.current_group_id);
   if (!groupId) throw new Error("No group selected.");
@@ -633,6 +683,26 @@ async function renderScreen() {
       const label = $("ringLabel");
       const totalMs = getPhaseTotalMs(state, d.phase);
       const phaseLeft = d.phaseRemainingMs || 0;
+      const secondLeft = Math.ceil(phaseLeft / 1000);
+      if (
+        (d.phase === "canvassing" || d.phase === "thinking") &&
+        secondLeft <= 10 &&
+        secondLeft > 0
+      ) {
+        if (lastCountdownSoundSecond !== secondLeft) {
+          lastCountdownSoundSecond = secondLeft;
+
+          // 10、5 秒各来一次完整“噔噔噔，蹬”
+          if (secondLeft === 10 || secondLeft === 5) {
+            playCountdownMotif();
+          }
+
+          // 3、2、1 秒更急促
+          if (secondLeft <= 3) {
+            playTone(1046, 120, 0.22);
+          }
+        }
+      }
       ringWrap.classList.remove("is-active", "is-ending");
       setRingProgress(ring, phaseLeft, totalMs, 590.619);
 
