@@ -520,7 +520,9 @@ function buildQRCode(width = 230) {
 }
 
 async function initScreen() {
+  if (!requireScreenAccess()) return;
   localHomeOnly = true;
+
   renderLocalHome();
 
   setTimeout(() => {
@@ -703,22 +705,22 @@ async function renderScreen() {
       const secondLeft = Math.ceil(phaseLeft / 1000);
       if (
         (d.phase === "canvassing" || d.phase === "thinking") &&
-        secondLeft <= 10 &&
-        secondLeft > 0
+        secondLeft <= 5 &&
+        secondLeft > 1
       ) {
         if (lastCountdownSoundSecond !== secondLeft) {
           lastCountdownSoundSecond = secondLeft;
 
-          // 10、5 秒各来一次完整“噔噔噔，蹬”
-          if (secondLeft === 10 || secondLeft === 5) {
-            playCountdownMotif();
-          }
-
-          // 3、2、1 秒更急促
-          if (secondLeft <= 3) {
-            playTone(1046, 120, 0.22);
-          }
+          // 5、4、3、2 秒：每秒 d 一下
+          playTone(784, 120, 0.2);
         }
+      }
+
+      if (secondLeft === 1 && lastCountdownSoundSecond !== 1) {
+        lastCountdownSoundSecond = 1;
+
+        // 1 秒开始拉长，到 0 秒附近结束
+        playTone(392, 900, 0.28);
       }
       ringWrap.classList.remove("is-active", "is-ending");
       setRingProgress(ring, phaseLeft, totalMs, 590.619);
@@ -830,6 +832,24 @@ ${emojiConfetti(60)}
       </div>
     </section>
     ${hiddenNav()}`;
+}
+function requireScreenAccess() {
+  const saved = sessionStorage.getItem("dubbing_screen_ok");
+
+  if (saved === "yes") {
+    return true;
+  }
+
+  const input = prompt("请输入大屏访问密码：");
+
+  if (input === cfg.SCREEN_CODE) {
+    sessionStorage.setItem("dubbing_screen_ok", "yes");
+    return true;
+  }
+
+  alert("密码错误，无法进入大屏页面。");
+  location.href = "vote.html";
+  return false;
 }
 // Admin dashboard for emergency control.
 function requireAdmin() {
