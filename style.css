@@ -4252,3 +4252,64 @@ button:disabled {
     transform: none;
   }
 }
+
+/* =========================================================
+   HARD FIX: restore left voting-info
+   style2 still had: body.screen-page .voting-info { display:none!important; }
+   This must be overridden with the same selector strength.
+   ========================================================= */
+
+body.screen-page .voting-screen {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(390px, 0.72fr) !important;
+  align-items: center !important;
+  justify-content: initial !important;
+  gap: clamp(28px, 4vw, 62px) !important;
+  padding: clamp(32px, 5vw, 72px) !important;
+}
+
+body.screen-page .voting-info {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+body.screen-page .voting-action {
+  display: grid !important;
+  justify-items: center !important;
+  align-items: center !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+body.screen-page .voting-info > * {
+  display: revert;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+body.screen-page .voting-kicker {
+  display: inline-flex !important;
+}
+
+body.screen-page .stage-controls,
+body.screen-page .voting-control-line {
+  display: flex !important;
+}
+
+body.screen-page .voting-cover {
+  display: block !important;
+}
+
+body.screen-page .voting-cover img {
+  display: block !important;
+}
+
+@media (max-width: 980px) {
+  body.screen-page .voting-screen {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+  }
+}
