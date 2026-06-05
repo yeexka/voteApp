@@ -544,7 +544,7 @@ function renderLocalHome() {
     <section class="home-code-card">
       <h1 class="home-main-title">
         马来西亚沙巴大学2+2国际本科首届<br>
-        <span>“声临其境”杯配音大赛</span>
+        <span>“声临其境”配音大赛</span>
       </h1>
       <p class="home-subtitle">以声入戏，以译传情</p>
       <div class="home-status-pill" onclick="this.style.display='none'">等待比赛开始</div>
@@ -578,7 +578,7 @@ async function renderScreen() {
           <section class="home-code-card">
             <h1 class="home-main-title">
               马来西亚沙巴大学2+2国际本科首届<br>
-              <span>“声临其境”杯配音大赛</span>
+              <span>“声临其境”配音大赛</span>
             </h1>
             <p class="home-subtitle">以声入戏，以译传情</p>
 <div class="home-status-pill" onclick="this.style.display='none'">等待比赛开始</div>
