@@ -4313,3 +4313,111 @@ body.screen-page .voting-cover img {
     text-align: center !important;
   }
 }
+
+/* =========================================================
+   ULTIMATE FIX: force voting left panel back
+   This targets the actual DOM:
+   <main id="screenMain" class="voting-screen">
+     <section class="voting-info">...</section>
+     <section class="voting-action">...</section>
+   ========================================================= */
+
+html body.screen-page main#screenMain.voting-screen {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(390px, 0.72fr) !important;
+  grid-template-areas: "info action" !important;
+  align-items: center !important;
+  justify-items: stretch !important;
+  gap: clamp(28px, 4vw, 62px) !important;
+  width: 100vw !important;
+  min-height: 100vh !important;
+  padding: clamp(32px, 5vw, 72px) !important;
+  text-align: left !important;
+}
+
+html body.screen-page main#screenMain.voting-screen > section.voting-info {
+  grid-area: info !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 30 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  pointer-events: auto !important;
+
+  padding: clamp(32px, 4vw, 60px) !important;
+  border-radius: 36px !important;
+  background: rgba(0, 76, 64, 0.38) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  backdrop-filter: blur(7px) !important;
+}
+
+html body.screen-page main#screenMain.voting-screen > section.voting-action {
+  grid-area: action !important;
+  display: grid !important;
+  justify-items: center !important;
+  align-items: center !important;
+  position: relative !important;
+  z-index: 20 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+html body.screen-page main#screenMain.voting-screen > section.voting-info * {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+html body.screen-page main#screenMain.voting-screen .voting-kicker {
+  display: inline-flex !important;
+}
+
+html body.screen-page main#screenMain.voting-screen .voting-group {
+  display: block !important;
+  margin: 34px 0 12px !important;
+}
+
+html body.screen-page main#screenMain.voting-screen .voting-work,
+html body.screen-page main#screenMain.voting-screen .voting-members,
+html body.screen-page main#screenMain.voting-screen .voting-phase,
+html body.screen-page main#screenMain.voting-screen .voting-hint {
+  display: block !important;
+}
+
+html body.screen-page main#screenMain.voting-screen .voting-cover {
+  display: block !important;
+}
+
+html body.screen-page main#screenMain.voting-screen .voting-cover img {
+  display: block !important;
+}
+
+html body.screen-page main#screenMain.voting-screen .stage-controls,
+html body.screen-page main#screenMain.voting-screen .voting-control-line {
+  display: flex !important;
+  justify-content: flex-start !important;
+}
+
+/* Do not let old 'right-only' mobile/vertical layout survive */
+html body.screen-page main#screenMain.voting-screen .voting-info[style*="display: none"] {
+  display: block !important;
+}
+
+@media (max-width: 980px) {
+  html body.screen-page main#screenMain.voting-screen {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "info"
+      "action" !important;
+    text-align: center !important;
+  }
+
+  html body.screen-page main#screenMain.voting-screen .stage-controls,
+  html body.screen-page main#screenMain.voting-screen .voting-control-line {
+    justify-content: center !important;
+  }
+}
