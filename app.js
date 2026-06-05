@@ -792,10 +792,10 @@ ${emojiConfetti(60)}
                   results.findIndex((item) => item.id === r.id) + 1;
                 const medal =
                   originalRank === 1
-                    ? "冠军"
+                    ? "第一名"
                     : originalRank === 2
-                      ? "亚军"
-                      : "季军";
+                      ? "第二名"
+                      : "第三名";
                 const icon =
                   originalRank === 1 ? "🥇" : originalRank === 2 ? "🥈" : "🥉";
                 const score = r.vote_count ? r.average_score.toFixed(2) : "-";
