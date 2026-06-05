@@ -3733,3 +3733,524 @@ body.screen-page .voting-control-line {
     height: min(54vw, 420px) !important;
   }
 }
+/* =========================================================
+   PATCH FROM style1
+   保留 style2 作为主样式；
+   只把 style1 的倒计时、按钮风格、扫码字体、比赛结果页样式覆盖回来。
+   这次不大扫除 CSS，避免网页再次经历文明崩塌。
+   ========================================================= */
+
+/* ---------- style1 button style ---------- */
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+  font-weight: 900;
+  border-radius: 999px;
+  padding: 12px 18px;
+  color: var(--green-800);
+  background: linear-gradient(135deg, var(--gold-200), var(--gold-300));
+  box-shadow: 0 10px 26px rgba(0, 45, 38, 0.22);
+}
+
+button.secondary {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: none;
+}
+
+button.danger {
+  color: #b42318;
+  background: #ffefe8;
+}
+
+button.small {
+  min-height: 34px;
+  padding: 7px 12px;
+  font-size: 14px;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---------- style1 countdown / QR voting screen ---------- */
+/* ---------- Voting big screen ---------- */
+.voting-screen {
+  min-height: 100vh;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(390px, 0.72fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 62px);
+  padding: clamp(32px, 5vw, 72px);
+  overflow: hidden;
+}
+
+.voting-info,
+.voting-action {
+  position: relative;
+  z-index: 1;
+}
+
+.voting-group {
+  margin: 34px 0 12px;
+  color: var(--gold-100);
+  font-size: clamp(58px, 8vw, 124px);
+  line-height: 0.95;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+  text-shadow: 0 22px 64px rgba(0, 45, 38, 0.36);
+}
+
+.voting-phase {
+  color: var(--gold-300);
+  font-size: clamp(32px, 3.8vw, 62px);
+  font-weight: 950;
+}
+
+.voting-hint {
+  max-width: 720px;
+  color: var(--muted);
+  font-size: clamp(19px, 1.7vw, 28px);
+  line-height: 1.5;
+}
+
+.voting-action {
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+}
+
+.ring-wrap {
+  width: min(410px, 78vw);
+  aspect-ratio: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 26px 48px rgba(0, 45, 38, 0.28));
+}
+
+.timer-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: rgba(0, 72, 60, 0.34);
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 14;
+}
+
+.ring-progress {
+  fill: transparent;
+  stroke: var(--gold-300);
+  stroke-width: 14;
+  stroke-linecap: round;
+  stroke-dasharray: 590.619;
+  stroke-dashoffset: 590.619;
+  transition:
+    stroke-dashoffset 0.55s ease,
+    stroke 0.25s ease;
+  filter: drop-shadow(0 0 13px rgba(255, 211, 107, 0.8));
+}
+
+.ring-content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border-radius: 50%;
+}
+
+.ring-time {
+  color: var(--white);
+  font-size: clamp(58px, 7vw, 104px);
+  font-weight: 950;
+  letter-spacing: -0.08em;
+  text-shadow: 0 10px 30px rgba(0, 45, 38, 0.32);
+}
+
+.ring-label {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: clamp(16px, 1.2vw, 23px);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.ring-wrap.is-active {
+  animation: pulseGlow 1.6s ease-in-out infinite;
+}
+
+.ring-wrap.is-ending {
+  animation: warningPulse 0.65s ease-in-out infinite;
+}
+
+.ring-wrap.is-ending .ring-progress {
+  stroke: #ff4d4f;
+  filter: drop-shadow(0 0 18px rgba(255, 77, 79, 0.9));
+}
+
+.ring-wrap.is-ending .ring-time {
+  color: #ffefef;
+  text-shadow:
+    0 0 18px rgba(255, 77, 79, 0.9),
+    0 8px 28px rgba(0, 45, 38, 0.35);
+}
+
+.qr-stage {
+  width: min(360px, 88vw);
+  padding: 22px;
+  border-radius: 34px;
+  text-align: center;
+  background: rgba(0, 74, 62, 0.72);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.qr-box {
+  display: inline-block;
+  padding: 16px;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 12px 34px rgba(0, 45, 38, 0.22);
+}
+
+.qr-box canvas,
+.qr-box img {
+  display: block;
+}
+
+.qr-caption {
+  margin-top: 15px;
+  color: var(--gold-300);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.vote-url {
+  margin-bottom: 0;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.voting-control-line {
+  justify-content: flex-start;
+}
+
+/* ---------- style1 results page ---------- */
+/* ---------- Results ---------- */
+.results-screen {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: clamp(26px, 4vw, 50px);
+}
+
+.results-card {
+  position: relative;
+  z-index: 4;
+  width: min(1240px, 94vw);
+  padding: clamp(24px, 3vw, 42px);
+  border-radius: 38px;
+  text-align: center;
+  background: rgba(0, 74, 62, 0.72);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 54px rgba(0, 45, 38, 0.25);
+}
+
+.results-title {
+  margin: 10px 0 22px;
+  color: #fff8d8;
+  font-size: clamp(44px, 5vw, 82px);
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 18px rgba(255, 236, 160, 0.28),
+    0 10px 28px rgba(0, 60, 50, 0.35);
+}
+
+.podium-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.16fr 1fr;
+  align-items: end;
+  gap: 24px;
+  margin: 22px auto 28px;
+}
+
+.podium-card {
+  min-height: 285px;
+  padding: 24px 18px;
+  border-radius: 32px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 14px 34px rgba(0, 45, 38, 0.18);
+}
+
+.podium-1 {
+  min-height: 345px;
+  transform: scale(1.05) translateY(-12px);
+  z-index: 5;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.45), transparent 42%),
+    linear-gradient(180deg, rgba(255, 232, 142, 0.38), rgba(255, 255, 255, 0.14));
+  border: 2px solid rgba(255, 238, 170, 0.78);
+  box-shadow:
+    0 0 30px rgba(255, 225, 120, 0.28),
+    0 20px 48px rgba(0, 45, 38, 0.24);
+}
+
+.podium-2,
+.podium-3 {
+  transform: none;
+}
+
+.podium-icon {
+  font-size: clamp(44px, 4vw, 72px);
+}
+
+.podium-medal {
+  color: var(--gold-300);
+  font-size: clamp(18px, 1.5vw, 28px);
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+.podium-name {
+  color: var(--white);
+  font-size: clamp(28px, 3vw, 52px);
+  font-weight: 950;
+}
+
+.podium-work {
+  color: var(--muted);
+  font-size: clamp(15px, 1.2vw, 22px);
+  font-weight: 800;
+}
+
+.podium-score {
+  color: #fff8d8;
+  font-size: clamp(36px, 4vw, 68px);
+  font-weight: 950;
+}
+
+.refined-bar-list {
+  display: grid;
+  gap: 8px;
+}
+
+.refined-bar-row {
+  min-height: 48px;
+  padding: 8px 14px;
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: 46px 1fr 84px;
+  gap: 12px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.bar-rank,
+.bar-score {
+  color: var(--gold-300);
+  font-weight: 950;
+}
+
+.bar-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 5px;
+  color: var(--white);
+}
+
+.bar-label span {
+  color: var(--muted);
+}
+
+.bar-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #fff0a8, #ffd36b);
+}
+
+/* Lighter celebration. Old oversized classes are intentionally limited. */
+.emoji-confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.emoji-confetti-layer span {
+  position: absolute;
+  display: inline-block;
+  opacity: 0;
+  animation: emojiFloat 5.5s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 45, 38, 0.22));
+}
+
+.emoji-confetti-layer span:nth-child(n + 55) {
+  display: none;
+}
+
+.side-fireworks {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.firework {
+  position: absolute;
+  top: 50%;
+  width: 300px;
+  height: 460px;
+  transform: translateY(-50%);
+}
+
+.firework.left {
+  left: -80px;
+}
+
+.firework.right {
+  right: -80px;
+}
+
+.firework span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11px;
+  height: 22px;
+  border-radius: 4px;
+  opacity: 0;
+  background: #fff4b8;
+  animation: sideBurst 3s ease-out infinite;
+}
+
+.firework span:nth-child(odd) {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.firework span:nth-child(n + 9) {
+  display: none;
+}
+
+.firework.left span:nth-child(1) { --x: 170px; --y: -170px; --r: 260deg; animation-delay: 0s; background: #fff4b8; }
+.firework.left span:nth-child(2) { --x: 260px; --y: -110px; --r: 420deg; animation-delay: .22s; background: #ffffff; }
+.firework.left span:nth-child(3) { --x: 340px; --y: -40px; --r: 300deg; animation-delay: .44s; background: #ffd36b; }
+.firework.left span:nth-child(4) { --x: 330px; --y: 55px; --r: 480deg; animation-delay: .66s; background: #a8fff0; }
+.firework.left span:nth-child(5) { --x: 250px; --y: 135px; --r: 340deg; animation-delay: .88s; background: #ffffff; }
+.firework.left span:nth-child(6) { --x: 160px; --y: 195px; --r: 520deg; animation-delay: 1.10s; background: #fff4b8; }
+.firework.left span:nth-child(7) { --x: 390px; --y: -185px; --r: 440deg; animation-delay: 1.32s; background: #ffd36b; }
+.firework.left span:nth-child(8) { --x: 390px; --y: 150px; --r: 560deg; animation-delay: 1.54s; background: #ffffff; }
+
+.firework.right span:nth-child(1) { --x: -170px; --y: -170px; --r: -260deg; animation-delay: 0s; background: #fff4b8; }
+.firework.right span:nth-child(2) { --x: -260px; --y: -110px; --r: -420deg; animation-delay: .22s; background: #ffffff; }
+.firework.right span:nth-child(3) { --x: -340px; --y: -40px; --r: -300deg; animation-delay: .44s; background: #ffd36b; }
+.firework.right span:nth-child(4) { --x: -330px; --y: 55px; --r: -480deg; animation-delay: .66s; background: #a8fff0; }
+.firework.right span:nth-child(5) { --x: -250px; --y: 135px; --r: -340deg; animation-delay: .88s; background: #ffffff; }
+.firework.right span:nth-child(6) { --x: -160px; --y: 195px; --r: -520deg; animation-delay: 1.10s; background: #fff4b8; }
+.firework.right span:nth-child(7) { --x: -390px; --y: -185px; --r: -440deg; animation-delay: 1.32s; background: #ffd36b; }
+.firework.right span:nth-child(8) { --x: -390px; --y: 150px; --r: -560deg; animation-delay: 1.54s; background: #ffffff; }
+
+/* ---------- style1 animations needed by countdown/results ---------- */
+/* ---------- Animations ---------- */
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+}
+
+@keyframes warningPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.045); }
+}
+
+@keyframes emojiFloat {
+  0% {
+    opacity: 0;
+    transform: translate(0, 26px) rotate(0deg) scale(0.55);
+  }
+  18% {
+    opacity: 0.9;
+  }
+  58% {
+    opacity: 0.78;
+    transform: translate(var(--drift), -34px) rotate(calc(var(--rotate) / 2)) scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--drift) * 1.3), -105px) rotate(var(--rotate)) scale(0.76);
+  }
+}
+
+@keyframes sideBurst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.5);
+  }
+  16% {
+    opacity: 0.9;
+  }
+  72% {
+    opacity: 0.68;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(0.92);
+  }
+}
+
+/* ---------- scope safety fixes ---------- */
+/* 手机投票页的打分按钮继续保持强选中效果，别被通用 button 样式污染 */
+.score-btn.selected {
+  background: linear-gradient(135deg, #ffb000, #ff5a1f) !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+  transform: scale(1.12) !important;
+  box-shadow:
+    0 0 0 4px rgba(255, 176, 0, 0.35),
+    0 10px 24px rgba(255, 90, 31, 0.45) !important;
+  font-weight: 900 !important;
+}
+
+/* 确保倒计时最后阶段还是红色警示 */
+.ring-wrap.is-ending .ring-progress {
+  stroke: #ff4d4f !important;
+  filter: drop-shadow(0 0 18px rgba(255, 77, 79, 0.9)) !important;
+}
+
+.ring-wrap.is-ending .ring-time {
+  color: #ffefef !important;
+  text-shadow:
+    0 0 18px rgba(255, 77, 79, 0.9),
+    0 8px 28px rgba(0, 0, 0, 0.35) !important;
+}
